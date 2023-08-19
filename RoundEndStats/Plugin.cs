@@ -1,24 +1,24 @@
 ﻿using Exiled.API.Features;
+using Exiled.Events.Handlers;
 
-namespace Exiled.Template
+namespace RES
 {
     public sealed class Plugin : Plugin<Config>
     {
-        public override string Author => "Your name";
-
-        public override string Name => "Exiled.Template";
-
+        public override string Author => "DuoNineXcore";
+        public override string Name => "RoundEndStats";
         public override string Prefix => Name;
-
         public static Plugin Instance;
-
-        private EventHandlers _handlers;
+        private EventHandlers eventHandlers;
 
         public override void OnEnabled()
         {
             Instance = this;
 
             RegisterEvents();
+            Exiled.Events.Handlers.Player.Died += eventHandlers.OnPlayerDied;
+            Exiled.Events.Handlers.Player.KillingPlayer += eventHandlers.OnPlayerKilling;
+            Exiled.Events.Handlers.Server.RoundEnded += eventHandlers.OnRoundEnd;
 
             base.OnEnabled();
         }
@@ -27,6 +27,9 @@ namespace Exiled.Template
         {
             UnregisterEvents();
 
+            Exiled.Events.Handlers.Player.Died -= eventHandlers.OnPlayerDied;
+            Exiled.Events.Handlers.Player.KillingPlayer -= eventHandlers.OnPlayerKilling;
+            Exiled.Events.Handlers.Server.RoundEnded -= eventHandlers.OnRoundEnd;
             Instance = null;
 
             base.OnDisabled();
@@ -34,12 +37,12 @@ namespace Exiled.Template
 
         private void RegisterEvents()
         {
-            _handlers = new EventHandlers();
+            eventHandlers = new EventHandlers();
         }
 
         private void UnregisterEvents()
         {
-            _handlers = null;
+            eventHandlers = null;
         }
     }
 }
