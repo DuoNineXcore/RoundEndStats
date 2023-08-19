@@ -7,8 +7,8 @@
     <ProjectGuid>{64FD0725-66EE-4245-B1EF-AF9B1300E03A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Exiled.Template</RootNamespace>
-    <AssemblyName>Exiled.Template</AssemblyName>
+    <RootNamespace>RoundEndStats</RootNamespace>
+    <AssemblyName>RoundEndStats</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
