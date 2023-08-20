@@ -19,6 +19,7 @@ stats_format: '{playerName}: Kills - {kills}, Deaths - {deaths}, Round Time - {t
 **[EXILED](https://github.com/Exiled-Team/EXILED) must be installed for this to work.**
 
 Place the "RoundEndStats.dll" file in your Plugins folder.
+
 Windows: ``%appdata%/EXILED/Plugins``.
 
 Linux: ``.config/EXILED/Plugins``.
