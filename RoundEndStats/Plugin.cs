@@ -1,14 +1,13 @@
 ﻿using Exiled.API.Features;
-using Exiled.Events.Handlers;
 
 namespace RES
 {
-    public sealed class Plugin : Plugin<Config>
+    public class RoundEndStats : Plugin<Config>
     {
         public override string Author => "DuoNineXcore";
         public override string Name => "RoundEndStats";
         public override string Prefix => Name;
-        public static Plugin Instance;
+        public static RoundEndStats Instance;
         private EventHandlers eventHandlers;
 
         public override void OnEnabled()
@@ -17,7 +16,6 @@ namespace RES
 
             RegisterEvents();
             Exiled.Events.Handlers.Player.Died += eventHandlers.OnPlayerDied;
-            Exiled.Events.Handlers.Player.KillingPlayer += eventHandlers.OnPlayerKilling;
             Exiled.Events.Handlers.Server.RoundEnded += eventHandlers.OnRoundEnd;
 
             base.OnEnabled();
@@ -28,7 +26,6 @@ namespace RES
             UnregisterEvents();
 
             Exiled.Events.Handlers.Player.Died -= eventHandlers.OnPlayerDied;
-            Exiled.Events.Handlers.Player.KillingPlayer -= eventHandlers.OnPlayerKilling;
             Exiled.Events.Handlers.Server.RoundEnded -= eventHandlers.OnRoundEnd;
             Instance = null;
 

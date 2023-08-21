@@ -75,6 +75,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\Utils.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Config.cs" />
@@ -83,6 +84,7 @@
   <ItemGroup>
     <Analyzer Include="..\..\..\Documents\C# References\Exiled.Events.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.

@@ -19,8 +19,15 @@ namespace RES
 
         public bool DisplaySurvivalTime { get; set; } = true;
 
-        public int BroadcastSize { get; set; } = 15;
+        public ushort BroadcastDuration { get; set; } = 10;
 
-        public string StatsFormat { get; set; } = "{playerName}: Kills - {kills}, Deaths - {deaths}, Round Time - {time}";
+        public int BroadcastSize { get; set; } = 30;
+
+        public string StatsFormat { get; set; } =
+            "<b>{playerName}: Kills - {kills}, Deaths - {deaths}\n" +
+            "{mvpMessage}\n" +
+            "Top SCP Killer: {topSCPName} with {topSCPKills} kills\n" +
+            "Top Human Killer: {topHumanName} with {topHumanKills} kills</b>";
+
     }
 }
