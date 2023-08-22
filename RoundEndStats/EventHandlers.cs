@@ -14,10 +14,23 @@ namespace RES
 {
     public class EventHandlers
     {
-        private Dictionary<Player, int> humanKills = new Dictionary<Player, int>();
-        private Dictionary<Player, int> humanDeaths = new Dictionary<Player, int>();
-        private Dictionary<Player, int> scpKills = new Dictionary<Player, int>();
-        private Dictionary<Player, List<RoleTypeId>> scpTerminations = new Dictionary<Player, List<RoleTypeId>>();
+        private Dictionary<Player, int> kills = new Dictionary<Player, int>();
+        private Dictionary<Player, int> deaths = new Dictionary<Player, int>();
+        private Dictionary<Player, List<Tuple<RoleTypeId, string>>> scpTerminations = new Dictionary<Player, List<Tuple<RoleTypeId, string>>>();
+        private Dictionary<Player, RoleTypeId> lastRoleBeforeDeath = new Dictionary<Player, RoleTypeId>();
+        private API.Utils _utils;
+
+        public EventHandlers()
+        {
+            _utils = new API.Utils();
+        }
+
+        public void OnWaiting()
+        {
+            kills.Clear();
+            deaths.Clear();
+            scpTerminations.Clear();
+        }
 
         public void OnRoundEnd(RoundEndedEventArgs ev)
         {
@@ -29,107 +42,179 @@ namespace RES
 
         private void BroadcastPlayerStats(Player player)
         {
+            _utils.LogMessage("BroadcastPlayerStats started.", ConsoleColor.Yellow);
+
             if (player == null)
             {
-                Log.Warn("Attempted to broadcast stats to a null player.");
+                _utils.LogMessage("Attempted to broadcast stats to a null player.", ConsoleColor.Cyan);
                 return;
             }
 
-            int kills = GetHumanKills(player);
-            int deaths = GetHumanDeaths(player);
+            int playerKills = GetPlayerKills(player);
+            int deaths = GetPlayerDeaths(player);
             int matchTime = RoundSummary.roundTime;
 
-            Player topScpPlayer = GetTopScpKiller();
-            Player topHumanPlayer = GetTopHumanKiller();
+            _utils.LogMessage($"Player: {player.Nickname}, Kills: {playerKills}, Deaths: {deaths}, MatchTime: {matchTime}", ConsoleColor.Yellow);
 
-            string topScpName = topScpPlayer?.Nickname ?? "There were no top SCP players this round.";
-            string topScpKillsCount = topScpPlayer != null ? scpKills[topScpPlayer].ToString() : "0";
+            var sortedPlayersByKills = kills.OrderByDescending(k => k.Value).Select(k => k.Key).ToList();
 
-            string topHumanName = topHumanPlayer?.Nickname ?? "There were no top Human players this round.";
-            string topHumanKillsCount = topHumanPlayer != null ? humanKills[topHumanPlayer].ToString() : "0";
+            Player topKiller = sortedPlayersByKills.FirstOrDefault();
+            Player topScpPlayer = sortedPlayersByKills.FirstOrDefault(p => p.Role.Team == Team.SCPs);
+            Player topHumanPlayer = sortedPlayersByKills.FirstOrDefault(p => p.Role.Team != Team.SCPs);
+
+            _utils.LogMessage($"Top SCP Player: {topScpPlayer?.Nickname}, Top Human Player: {topHumanPlayer?.Nickname}", ConsoleColor.Yellow);
+
+            string topScpRoleName = topScpPlayer != null
+                ? (RoleNameFormatter.RoleNameMap.TryGetValue(topScpPlayer.Role.Type, out var scpName)
+                    ? scpName
+                    : topScpPlayer.Role.Type.ToString())
+                : "Unknown SCP";
+            string topScpName = topScpPlayer != null
+                ? $"<color=red>{topScpPlayer.Nickname}</color>"
+                : "There were no top SCP players this round.";
+            string topScpKillsCount = topScpPlayer != null ? kills[topScpPlayer].ToString() : "0";
+
+            string topHumanRoleColor = topHumanPlayer?.Role.Type.GetColor().ToHex() ?? "#FFFFFF";
+
+            string topHumanRoleName = topHumanPlayer != null
+                ? (RoleNameFormatter.RoleNameMap.TryGetValue(topHumanPlayer.Role.Type, out var humanName)
+                    ? humanName
+                    : topHumanPlayer.Role.Type.ToString())
+                : "Unknown Role";
+
+            string topHumanName = topHumanPlayer != null
+                ? $"<color={topHumanRoleColor}>{topHumanPlayer.Nickname}</color>"
+                : "There were no top Human players this round.";
+
+            string topHumanKillsCount = topHumanPlayer != null ? kills[topHumanPlayer].ToString() : "0";
+
+            string topKillerRoleName = topKiller != null
+                ? (RoleNameFormatter.RoleNameMap.TryGetValue(topKiller.Role.Type, out var killerName)
+                ? killerName
+                : topKiller.Role.Type.ToString())
+                : "Unknown Role";
+
+            string topKillerRoleColor = topKiller?.Role.Type.GetColor().ToHex() ?? "#FFFFFF"; 
+
+            string topKillerNameColored = topKiller != null
+                ? $"<color={topKillerRoleColor}>{topKiller.Nickname} [{topKillerRoleName}]</color>"
+                : "There was no top killer this round.";
+
+
+            _utils.LogMessage($"Top SCP Name: {topScpName}, Top Human Name: {topHumanName}", ConsoleColor.Yellow);
 
             string statsMessage = RoundEndStats.Instance.Config.StatsFormat
                 .Replace("{playerName}", player.Nickname)
-                .Replace("{kills}", kills.ToString())
-                .Replace("{deaths}", deaths.ToString())
+                .Replace("{playerKills}", playerKills.ToString())
+                .Replace("{TopKiller}", topKillerNameColored)
+                .Replace("{TopKillerRole}", topKillerRoleName)
+                .Replace("{playerDeaths}", deaths.ToString())
                 .Replace("{matchTime}", matchTime.ToString())
                 .Replace("{mvpMessage}", ConstructMvpMessage(GetMVP()))
                 .Replace("{topSCPName}", topScpName)
                 .Replace("{topSCPKills}", topScpKillsCount)
                 .Replace("{topHumanName}", topHumanName)
-                .Replace("{topHumanKills}", topHumanKillsCount);
+                .Replace("{topHumanKills}", topHumanKillsCount)
+                .Replace("{topSCPRole}", topScpRoleName)
+                .Replace("{topHumanRole}", topHumanRoleName);
+
+            _utils.LogMessage($"Stats Message: {statsMessage}", ConsoleColor.Yellow);
 
             player.Broadcast(RoundEndStats.Instance.Config.BroadcastDuration, $"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", Broadcast.BroadcastFlags.Normal);
+
+            _utils.LogMessage("BroadcastPlayerStats completed.", ConsoleColor.Yellow);
         }
 
         private string ConstructMvpMessage(Player mvp)
         {
-            string mvpRoleColor = API.Utils.ToHex(mvp.Role.Type.GetColor());
-            string killTypeMessage = mvp.Role.Team == Team.SCPs ? "SCP kills" : "human kills";
-            string terminationMessage = API.Utils.FormatScpTerminations(scpTerminations, mvp);
+            string mvpRoleColor = _utils.ToHex(mvp.Role.Type.GetColor());
+            string terminationMessage = _utils.FormatScpTerminations(scpTerminations, mvp);
 
             if (string.IsNullOrEmpty(terminationMessage))
             {
-                return $"MVP: <color={mvpRoleColor}>{mvp.Nickname}</color> with {GetPlayerKills(mvp)} {killTypeMessage}.";
+                _utils.LogMessage($"MVP {mvp.Nickname} had no SCP terminations.", ConsoleColor.DarkGreen);
+                return $"MVP: <color={mvpRoleColor}>{mvp.Nickname}</color> with {GetPlayerKills(mvp)} kills.";
             }
             else
             {
-                return $"MVP: <color={mvpRoleColor}>{mvp.Nickname}</color> with {GetPlayerKills(mvp)} {killTypeMessage} and the termination of: {terminationMessage}";
+                _utils.LogMessage($"MVP {mvp.Nickname} terminated: {terminationMessage}", ConsoleColor.DarkGreen);
+                return $"MVP: <color={mvpRoleColor}>{mvp.Nickname}</color> with {GetPlayerKills(mvp)} kills and the termination of {terminationMessage}";
             }
         }
 
-        public int GetPlayerKills(Player player) => API.Utils.GetValueFromDictionary(player, scpKills);
-        public int GetHumanKills(Player player) => API.Utils.GetValueFromDictionary(player, humanKills);
-        public int GetHumanDeaths(Player player) => API.Utils.GetValueFromDictionary(player, humanDeaths);
-
-        private Player GetTopHumanKiller()
+        public void OnPlayerHurt(HurtingEventArgs ev)
         {
-            var topHuman = humanKills.OrderByDescending(k => k.Value).FirstOrDefault();
-            if (topHuman.Key == null)
+            if (ev.Player.Health - ev.Amount <= 0) // This is a fatal damage
             {
-                Log.Warn("No top human killer found.");
+                lastRoleBeforeDeath[ev.Player] = ev.Player.Role.Type;
             }
-            return topHuman.Key;
-        }
-
-        private Player GetTopScpKiller()
-        {
-            var topScp = scpKills.OrderByDescending(k => k.Value).FirstOrDefault();
-            if (topScp.Key == null)
-            {
-                Log.Warn("No top SCP killer found.");
-            }
-            return topScp.Key;
-        }
-
-        public Player GetMVP()
-        {
-            var combinedKills = scpKills.Concat(humanKills)
-                                        .GroupBy(k => k.Key)
-                                        .ToDictionary(g => g.Key, g => g.Sum(k => k.Value));
-
-            return combinedKills.OrderByDescending(k => k.Value).FirstOrDefault().Key;
         }
 
         public void OnPlayerDied(DiedEventArgs ev)
         {
+            RoleTypeId roleAtDeath = lastRoleBeforeDeath.ContainsKey(ev.Player) ? lastRoleBeforeDeath[ev.Player] : ev.Player.Role.Type;
+
+            if (IsRoleTypeSCP(roleAtDeath) && ev.Attacker.Role.Team != Team.SCPs)
+            {
+                if (!scpTerminations.ContainsKey(ev.Attacker))
+                    scpTerminations[ev.Attacker] = new List<Tuple<RoleTypeId, string>>();
+
+                scpTerminations[ev.Attacker].Add(new Tuple<RoleTypeId, string>(roleAtDeath, ev.Player.Nickname));
+            }
+
+            _utils.LogMessage($"{ev.Player.Nickname} was a {ev.Player.Role.Type} when they died.", ConsoleColor.DarkCyan);
+
             if (ev == null || ev.Attacker == null || ev.Player == null)
             {
-                Log.Warn("OnPlayerDied event received with null arguments.");
+                _utils.LogMessage("OnPlayerDied event received with null arguments.", ConsoleColor.Cyan);
                 return;
             }
 
-            Log.Info($"{ev.Attacker.Nickname} killed {ev.Player.Nickname}");
+            _utils.LogMessage($"{ev.Attacker.Nickname} killed {ev.Player.Nickname}", ConsoleColor.DarkCyan);
 
             UpdateKills(ev);
             UpdateScpTerminations(ev);
             UpdateDeaths(ev);
         }
 
+        private bool IsRoleTypeSCP(RoleTypeId roleType)
+        {
+            List<RoleTypeId> scpRoles = new List<RoleTypeId>
+            {
+                RoleTypeId.Scp049,
+                RoleTypeId.Scp079,
+                RoleTypeId.Scp096,
+                RoleTypeId.Scp106,
+                RoleTypeId.Scp173,
+                RoleTypeId.Scp939
+            };
+
+            return scpRoles.Contains(roleType);
+        }
+
+        public int GetPlayerKills(Player player) => _utils.GetValueFromDictionary(player, kills);
+        public int GetPlayerDeaths(Player player) => _utils.GetValueFromDictionary(player, deaths);
+
+        public Player GetMVP()
+        {
+            foreach (var player in scpTerminations.Keys)
+            {
+                if (scpTerminations[player].Any())
+                {
+                    return player;
+                }
+            }
+            var mvp = kills.OrderByDescending(k => k.Value).FirstOrDefault().Key;
+            if (mvp == null)
+            {
+                _utils.LogMessage("No MVP found.", ConsoleColor.Red);
+            }
+            return mvp;
+        }
+
         private void UpdateKills(DiedEventArgs ev)
         {
-            Dictionary<Player, int> killDictionary = ev.Attacker.Role.Team == Team.SCPs ? scpKills : humanKills;
-            API.Utils.IncrementValueInDictionary(ev.Attacker, killDictionary);
+            _utils.IncrementValueInDictionary(ev.Attacker, kills);
         }
 
         private void UpdateScpTerminations(DiedEventArgs ev)
@@ -137,9 +222,15 @@ namespace RES
             if (ev.Player.Role.Team == Team.SCPs && ev.Attacker.Role.Team != Team.SCPs)
             {
                 if (!scpTerminations.ContainsKey(ev.Attacker))
-                    scpTerminations[ev.Attacker] = new List<RoleTypeId>();
+                    scpTerminations[ev.Attacker] = new List<Tuple<RoleTypeId, string>>();
 
-                scpTerminations[ev.Attacker].Add(ev.Player.Role.Type);
+                scpTerminations[ev.Attacker].Add(new Tuple<RoleTypeId, string>(ev.Player.Role.Type, ev.Player.Nickname));
+
+                _utils.LogMessage($"{ev.Attacker.Nickname} terminated SCP: {ev.Player.Nickname} [{ev.Player.Role.Type}]", ConsoleColor.DarkCyan);
+            }
+            else
+            {
+                _utils.LogMessage($"{ev.Attacker.Nickname} did not terminate an SCP. Killed: {ev.Player.Nickname} [{ev.Player.Role.Type}]", ConsoleColor.DarkCyan);
             }
         }
 
@@ -147,7 +238,7 @@ namespace RES
         {
             if (ev.Player.Role.Team != Team.SCPs)
             {
-                API.Utils.IncrementValueInDictionary(ev.Player, humanDeaths);
+                _utils.IncrementValueInDictionary(ev.Player, deaths);
             }
         }
     }

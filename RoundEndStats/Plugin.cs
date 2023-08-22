@@ -13,33 +13,25 @@ namespace RES
         public override void OnEnabled()
         {
             Instance = this;
-
-            RegisterEvents();
-            Exiled.Events.Handlers.Player.Died += eventHandlers.OnPlayerDied;
-            Exiled.Events.Handlers.Server.RoundEnded += eventHandlers.OnRoundEnd;
-
+            eventHandlers = new EventHandlers();
             base.OnEnabled();
+
+            Exiled.Events.Handlers.Player.Died += eventHandlers.OnPlayerDied;
+            Exiled.Events.Handlers.Player.Hurting += eventHandlers.OnPlayerHurt;
+            Exiled.Events.Handlers.Server.RoundEnded += eventHandlers.OnRoundEnd;
+            Exiled.Events.Handlers.Server.WaitingForPlayers += eventHandlers.OnWaiting;
         }
 
         public override void OnDisabled()
         {
-            UnregisterEvents();
+            Instance = null;
+            eventHandlers = null;
+            base.OnDisabled();
 
             Exiled.Events.Handlers.Player.Died -= eventHandlers.OnPlayerDied;
+            Exiled.Events.Handlers.Player.Hurting -= eventHandlers.OnPlayerHurt;
             Exiled.Events.Handlers.Server.RoundEnded -= eventHandlers.OnRoundEnd;
-            Instance = null;
-
-            base.OnDisabled();
-        }
-
-        private void RegisterEvents()
-        {
-            eventHandlers = new EventHandlers();
-        }
-
-        private void UnregisterEvents()
-        {
-            eventHandlers = null;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= eventHandlers.OnWaiting;
         }
     }
 }
