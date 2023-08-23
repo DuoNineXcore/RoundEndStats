@@ -3,16 +3,7 @@ this thing uhh fucking round end the thing
 
 # Config
 ```
-# what this shit do
-is_enabled: true
-# Console debug logs
-debug: false
-display_kills: true
-display_deaths: true
-display_objectives: true
-display_survival_time: true
-broadcast_size: 15
-stats_format: '{playerName}: Kills - {kills}, Deaths - {deaths}, Round Time - {time}'
+im not even gonna bother rn
 ```
 
 # Installation
