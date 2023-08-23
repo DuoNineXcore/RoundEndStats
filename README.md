@@ -10,7 +10,7 @@ Please Note that the `player` field is client sided, as it shows YOUR stats thro
 Achievements have a hierarchy of importance. 
 
 # Available Placeholders 
-`{playerName}` Displays the nickname of the player.
+`{playerName}` Displays the nickname of the player.\n
 `{playerKills}` Shows the number of players killed by the player.
 `{playerDeaths}` Indicates the number of times the player died.
 `{playerEscapeTime}` Shows the time taken by the player to escape.
