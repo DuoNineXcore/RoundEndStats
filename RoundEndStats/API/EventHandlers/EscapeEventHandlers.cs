@@ -3,6 +3,7 @@ using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using PlayerRoles;
 using RoundEndStats.API;
+using RoundEndStats.API.Achievements;
 using RoundEndStats.API.Events;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,8 @@ namespace RoundEndStats.API.EventHandlers
     public partial class MainEventHandlers
     {
         private List<EscapeEvent> escapeLog = new List<EscapeEvent>();
-        private DateTime roundStartTime;
         private Dictionary<Player, TimeSpan> playerEscapeTimes = new Dictionary<Player, TimeSpan>();
+        private DateTime roundStartTime;
 
         public void OnRoundStart()
         {

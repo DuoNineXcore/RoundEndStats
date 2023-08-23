@@ -1,4 +1,6 @@
 ﻿using Exiled.API.Features;
+using RoundEndStats.API.Achievements;
+using RoundEndStats.API.Achievements.AchievementEvents;
 using RoundEndStats.API.EventHandlers;
 
 namespace RoundEndStats
@@ -9,12 +11,16 @@ namespace RoundEndStats
         public override string Name => "RoundEndStats";
         public override string Prefix => "RES";
         public static RoundEndStats Instance;
-        private MainEventHandlers mainEventHandlers;
+        public MainEventHandlers mainEventHandlers;
+        public AchievementTracker achievementTracker;
+        public AchievementEvents achievementEvents;
 
         public override void OnEnabled()
         {
             Instance = this;
             mainEventHandlers = new MainEventHandlers();
+            achievementTracker = new AchievementTracker();
+            achievementEvents = new AchievementEvents();
             base.OnEnabled();
 
             //kill events
@@ -31,6 +37,11 @@ namespace RoundEndStats
             //main events
             Exiled.Events.Handlers.Server.RoundEnded += mainEventHandlers.OnRoundEnd;
             Exiled.Events.Handlers.Server.WaitingForPlayers += mainEventHandlers.OnWaiting;
+
+            //achievements
+            Exiled.Events.Handlers.Scp330.EatingScp330 += achievementEvents.OnEatingScp330;
+            Exiled.Events.Handlers.Player.EscapingPocketDimension += achievementEvents.OnPlayerEscapedPocketDimension;
+            Exiled.Events.Handlers.Scp096.Enraging += achievementEvents.OnPlayerTriggered096;
         }
 
         public override void OnDisabled()

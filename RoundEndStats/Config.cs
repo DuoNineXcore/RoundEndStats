@@ -18,6 +18,6 @@ namespace RoundEndStats
         public int BroadcastSize { get; set; } = 30;
 
         [Description("The text that will be displayed in the broadcast.")]
-        public string StatsFormat { get; set; } = "<b>{playerName}: Kills - {playerKills}, Deaths - {playerDeaths}\n {mvpMessage}\n Top SCP Killer: {topSCPName} with {topSCPKills} kills\n Top Human Killer: {topHumanName} with {topHumanKills} kills</b>";
+        public string StatsFormat { get; set; } = "<b>{playerName}: Kills - {playerKills}, Deaths - {playerDeaths}\n Top SCP Killer: {topSCPName} with {topSCPKills} kills\n Top Human Killer: {topHumanName} with {topHumanKills} kills</b>";
     }
 }

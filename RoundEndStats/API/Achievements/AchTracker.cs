@@ -1,5 +1,11 @@
 ﻿using Exiled.API.Features;
+using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Scp096;
+using Exiled.Events.EventArgs.Scp330;
+using InventorySystem.Items.Usables.Scp330;
+using PlayerRoles;
 using RoundEndStats.API.EventHandlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,57 +13,73 @@ namespace RoundEndStats.API.Achievements
 {
     public class AchievementTracker
     {
-        private Player player;
-        private Dictionary<string, bool> achievementsUnlocked;
-        public MainEventHandlers mainEventHandlers;
+        public Dictionary<string, bool> achievementsUnlocked;
+        private Dictionary<Player, List<Achievement>> unlockedAchievements = new Dictionary<Player, List<Achievement>>();
 
-        public AchievementTracker(Player player)
+        public AchievementTracker()
         {
-            this.player = player;
             achievementsUnlocked = new Dictionary<string, bool>();
-            mainEventHandlers = new MainEventHandlers();
         }
 
-        public void TrackSCPDeath(Player killer)
-        {
-            var scpKills = mainEventHandlers.killLog.Count(k => k.AttackerName == killer.Nickname && mainEventHandlers.IsRoleTypeSCP(k.VictimRole));
-
-            if (scpKills == 1)
-            {
-                AwardAchievement("SCP-Killer", killer);
-            }
-            else if (scpKills > 1)
-            {
-                AwardAchievement("SCP-Killer II", killer);
-            }
-        }
-
-        public void TrackPinkCandyUsage(Player user, int count)
-        {
-            if (count >= 5)
-            {
-                AwardAchievement("Suicide Bomber", user);
-            }
-        }
-
-        public void TrackSurvivalWithoutKilling(Player survivor)
-        {
-            var kills = mainEventHandlers.killLog.Count(k => k.AttackerName == survivor.Nickname);
-
-            if (kills == 0)
-            {
-                AwardAchievement("Peacemaker", survivor);
-            }
-        }
-
-        public void AwardAchievement(string achievementName, Player player)
+        public void AwardAchievement(string achievementName, Player ply)
         {
             if (!achievementsUnlocked[achievementName])
             {
+                Utils.LogMessage($"{ply} has received the {achievementName} achievement.", ConsoleColor.DarkCyan);
                 achievementsUnlocked[achievementName] = true;
-
-                player.Broadcast(10, $"You have been awarded the \"{achievementName}\" achievement.", Broadcast.BroadcastFlags.Normal, true);
             }
+        }
+
+        public Achievement GetGlobalTopAchievement()
+        {
+            Achievement topAchievement = null;
+
+            foreach (var playerAchievements in unlockedAchievements.Values)
+            {
+                foreach (var achievement in playerAchievements)
+                {
+                    if (topAchievement == null || AchievementRegistry.AllAchievements[achievement] > AchievementRegistry.AllAchievements[topAchievement])
+                    {
+                        topAchievement = achievement;
+                    }
+                }
+            }
+
+            return topAchievement;
+        }
+
+        public Achievement GetPlayerTopAchievement(Player player)
+        {
+            if (!unlockedAchievements.TryGetValue(player, out List<Achievement> playerAchievements))
+            {
+                return null;
+            }
+
+            Achievement playerTopAchievement = null;
+
+            foreach (var achievement in playerAchievements)
+            {
+                if (playerTopAchievement == null || AchievementRegistry.AchievementImportance[achievement] > AchievementRegistry.AchievementImportance[playerTopAchievement])
+                {
+                    playerTopAchievement = achievement;
+                }
+            }
+
+            return playerTopAchievement;
+        }
+
+        public List<Achievement> GetSortedUnlockedAchievements()
+        {
+            List<Achievement> unlockedAchievements = new List<Achievement>();
+
+            foreach (var achievement in AchievementRegistry.AllAchievements)
+            {
+                if (achievementsUnlocked[achievement.Name])
+                {
+                    unlockedAchievements.Add(achievement);
+                }
+            }
+            return unlockedAchievements.OrderBy(a => a.Importance).ToList();
         }
     }
 }

@@ -12,6 +12,7 @@ using RoundEndStats.API;
 using LiteNetLib4Mirror.Open.Nat;
 using System.Diagnostics;
 using System.Runtime.Remoting.Messaging;
+using static Achievements.AchievementManager;
 
 namespace RoundEndStats.API.EventHandlers
 {
@@ -19,6 +20,9 @@ namespace RoundEndStats.API.EventHandlers
     {
         public void OnWaiting()
         {
+            var achievementEvents = RoundEndStats.Instance.achievementEvents;
+            achievementEvents.pocketDimensionEscapes.Clear();
+            achievementEvents.playersWhoTriggered096.Clear();
             killLog.Clear();
         }
 
@@ -41,6 +45,7 @@ namespace RoundEndStats.API.EventHandlers
             int totalEscapes = GetTotalEscapes();
             TimeSpan? playerEscapeTime = GetPlayerEscapeTime(player);
             string formattedEscapeTime = playerEscapeTime.HasValue ? playerEscapeTime.Value.ToString(@"hh\:mm\:ss") : "N/A";
+            var playerTopAchievement = RoundEndStats.Instance.achievementTracker.GetTopUnlockedAchievement(player);
 
             string statsMessage = RoundEndStats.Instance.Config.StatsFormat
                 .Replace("{playerName}", player.Nickname)
@@ -48,6 +53,7 @@ namespace RoundEndStats.API.EventHandlers
                 .Replace("{playerDeaths}", playerStats.Deaths.ToString())
                 .Replace("{playerEscapeTime}", formattedEscapeTime)
 
+                .Replace("{playerTopAchievement}", playerTopAchievement?.Name ?? "None")
                 .Replace("{matchTime}", playerStats.MatchTime.ToString())
 
                 .Replace("{firstEscapee}", firstEscapee?.Nickname ?? "None")

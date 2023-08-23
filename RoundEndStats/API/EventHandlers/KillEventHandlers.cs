@@ -25,8 +25,16 @@ namespace RoundEndStats.API.EventHandlers
 
         public void OnPlayerDied(DiedEventArgs ev)
         {
+
             RoleTypeId roleAtDeath = lastRoleBeforeDeath.ContainsKey(ev.Player) ? lastRoleBeforeDeath[ev.Player] : ev.Player.Role.Type;
-            killLog.Add(new KillEvent(ev.Attacker.Role.Type, ev.Attacker.Nickname, roleAtDeath, ev.Player.Nickname));
+            killLog.Add(new KillEvent(ev.Attacker.Role.Type, ev.Attacker.Nickname, roleAtDeath, ev.Player.Nickname, ev.DamageHandler));
+
+            if (ev.Attacker.Role == RoleTypeId.Scp096 && RoundEndStats.Instance.achievementEvents.playersWhoTriggered096.ContainsKey(ev.Player))
+            {
+                RoundEndStats.Instance.achievementEvents.playersWhoTriggered096.Remove(ev.Player);
+            }
+
+            RoundEndStats.Instance.achievementEvents.OnPlayerKilledZombie(ev);
             UpdateKills(ev);
         }
 
