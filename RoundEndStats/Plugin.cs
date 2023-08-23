@@ -1,37 +1,58 @@
 ﻿using Exiled.API.Features;
+using RoundEndStats.API.EventHandlers;
 
-namespace RES
+namespace RoundEndStats
 {
     public class RoundEndStats : Plugin<Config>
     {
         public override string Author => "DuoNineXcore";
         public override string Name => "RoundEndStats";
-        public override string Prefix => Name;
+        public override string Prefix => "RES";
         public static RoundEndStats Instance;
-        private EventHandlers eventHandlers;
+        private MainEventHandlers mainEventHandlers;
 
         public override void OnEnabled()
         {
             Instance = this;
-            eventHandlers = new EventHandlers();
+            mainEventHandlers = new MainEventHandlers();
             base.OnEnabled();
 
-            Exiled.Events.Handlers.Player.Died += eventHandlers.OnPlayerDied;
-            Exiled.Events.Handlers.Player.Hurting += eventHandlers.OnPlayerHurt;
-            Exiled.Events.Handlers.Server.RoundEnded += eventHandlers.OnRoundEnd;
-            Exiled.Events.Handlers.Server.WaitingForPlayers += eventHandlers.OnWaiting;
+            //kill events
+            Exiled.Events.Handlers.Player.Died += mainEventHandlers.OnPlayerDied;
+            Exiled.Events.Handlers.Player.Hurting += mainEventHandlers.OnPlayerHurt;
+
+            //escape events
+            Exiled.Events.Handlers.Server.RoundStarted += mainEventHandlers.OnRoundStart;
+            Exiled.Events.Handlers.Player.Escaping += mainEventHandlers.OnPlayerEscape;
+
+            //item usage events 
+            Exiled.Events.Handlers.Player.UsedItem += mainEventHandlers.OnUsedItem;
+
+            //main events
+            Exiled.Events.Handlers.Server.RoundEnded += mainEventHandlers.OnRoundEnd;
+            Exiled.Events.Handlers.Server.WaitingForPlayers += mainEventHandlers.OnWaiting;
         }
 
         public override void OnDisabled()
         {
             Instance = null;
-            eventHandlers = null;
+            mainEventHandlers = null;
             base.OnDisabled();
 
-            Exiled.Events.Handlers.Player.Died -= eventHandlers.OnPlayerDied;
-            Exiled.Events.Handlers.Player.Hurting -= eventHandlers.OnPlayerHurt;
-            Exiled.Events.Handlers.Server.RoundEnded -= eventHandlers.OnRoundEnd;
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= eventHandlers.OnWaiting;
+            //kill events
+            Exiled.Events.Handlers.Player.Died -= mainEventHandlers.OnPlayerDied;
+            Exiled.Events.Handlers.Player.Hurting -= mainEventHandlers.OnPlayerHurt;
+
+            //escape events
+            Exiled.Events.Handlers.Server.RoundStarted -= mainEventHandlers.OnRoundStart;
+            Exiled.Events.Handlers.Player.Escaping -= mainEventHandlers.OnPlayerEscape;
+
+            //item usage events
+            Exiled.Events.Handlers.Player.UsedItem -= mainEventHandlers.OnUsedItem;
+
+            //main events
+            Exiled.Events.Handlers.Server.RoundEnded -= mainEventHandlers.OnRoundEnd;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= mainEventHandlers.OnWaiting;
         }
     }
 }

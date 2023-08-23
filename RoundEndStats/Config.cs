@@ -1,7 +1,7 @@
 ﻿using Exiled.API.Interfaces;
 using System.ComponentModel;
 
-namespace RES
+namespace RoundEndStats
 {
     public class Config : IConfig
     {

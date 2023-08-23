@@ -8,16 +8,16 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace RES.API
+namespace RoundEndStats.API
 {
-    public class Utils
+    public static class Utils
     {
-        public int GetValueFromDictionary(Player player, Dictionary<Player, int> dictionary)
+        public static int GetValueFromDictionary(Player player, Dictionary<Player, int> dictionary)
         {
             return dictionary.ContainsKey(player) ? dictionary[player] : 0;
         }
 
-        public string FormatScpTerminations(Dictionary<Player, List<Tuple<RoleTypeId, string>>> scpTerminations, Player player)
+        public static string FormatScpTerminations(Dictionary<Player, List<Tuple<RoleTypeId, string>>> scpTerminations, Player player)
         {
             if (!scpTerminations.ContainsKey(player) || !scpTerminations[player].Any())
                 return string.Empty;
@@ -28,7 +28,7 @@ namespace RES.API
 
             var formattedTerminations = terminationCounts.Select(kvp =>
             {
-                string scpName = RoleNameFormatter.RoleNameMap.TryGetValue(kvp.Key, out var friendlyName) ? friendlyName : kvp.Key.ToString();
+                string scpName = NameFormatter.RoleNameMap.TryGetValue(kvp.Key, out var friendlyName) ? friendlyName : kvp.Key.ToString();
                 var names = kvp.Value.Select(tuple => tuple.Item2).Distinct().ToList();
 
                 if (names.Count() == 1)
@@ -51,9 +51,9 @@ namespace RES.API
             return string.Join(", ", formattedTerminations) + " and " + lastScp;
         }
 
-        public void LogMessage(string message, ConsoleColor color)
+        public static void LogMessage(string message, ConsoleColor color)
         {
-            StackFrame frame = new StackTrace(1, false).GetFrame(1); // 1 up from this method
+            StackFrame frame = new StackTrace(1, false).GetFrame(1);
             string methodName = frame.GetMethod().Name;
             string className = frame.GetMethod().DeclaringType.Name;
 
@@ -63,7 +63,7 @@ namespace RES.API
             }
         }
 
-        public void IncrementValueInDictionary(Player player, Dictionary<Player, int> dictionary)
+        public static void IncrementValueInDictionary(Player player, Dictionary<Player, int> dictionary)
         {
             if (dictionary.ContainsKey(player))
                 dictionary[player]++;
@@ -71,7 +71,7 @@ namespace RES.API
                 dictionary[player] = 1;
         }
 
-        public string ToHex(Color color)
+        public static string ToHex(Color color)
         {
             int r = Mathf.FloorToInt(color.r * 255);
             int g = Mathf.FloorToInt(color.g * 255);

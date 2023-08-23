@@ -66,6 +66,10 @@
     <Reference Include="Mirror">
       <HintPath>..\..\..\Documents\C# References\Mirror.dll</HintPath>
     </Reference>
+    <Reference Include="PluginAPI, Version=13.1.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Documents\C# References\PluginAPI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -73,17 +77,31 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\Documents\C# References\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Documents\C# References\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\RoleNameFormatter.cs" />
+    <Compile Include="API\Achievements\AchConstructor.cs" />
+    <Compile Include="API\Achievements\AchRegistry.cs" />
+    <Compile Include="API\Achievements\AchTracker.cs" />
+    <Compile Include="API\EventHandlers\EscapeEventHandlers.cs" />
+    <Compile Include="API\EventHandlers\KillEventHandlers.cs" />
+    <Compile Include="API\EventHandlers\ScpItemUsageEventHandler.cs" />
+    <Compile Include="API\Events\EscapeEvent.cs" />
+    <Compile Include="API\Events\KillEvent.cs" />
+    <Compile Include="API\Events\ScpItemUsageEvent.cs" />
+    <Compile Include="API\NameFormatter.cs" />
     <Compile Include="API\Utils.cs" />
-    <Compile Include="EventHandlers.cs" />
+    <Compile Include="API\EventHandlers\MainEventHandlers.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\Documents\C# References\Exiled.Events.dll" />
+    <Analyzer Include="..\..\..\Documents\C# References\PluginAPI.dll" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

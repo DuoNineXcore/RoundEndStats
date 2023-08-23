@@ -1,9 +1,9 @@
 ﻿using PlayerRoles;
 using System.Collections.Generic;
 
-namespace RES.API
+namespace RoundEndStats.API
 {
-    public static class RoleNameFormatter
+    public static class NameFormatter
     {
         public static readonly Dictionary<RoleTypeId, string> RoleNameMap = new Dictionary<RoleTypeId, string>
         {
@@ -38,10 +38,35 @@ namespace RES.API
             }
             else
             {
-                // If the role isn't in our map, just return the raw identifier as a fallback.
                 return roleId.ToString();
             }
         }
-    }
 
+        public static readonly Dictionary<ItemType, string> SCPItemNameMap = new Dictionary<ItemType, string>
+        {
+            { ItemType.SCP018, "SCP-018" },
+            { ItemType.SCP1576, "SCP-1576" },
+            { ItemType.SCP1853, "SCP-1853" },
+            { ItemType.SCP207, "SCP-207" },
+            { ItemType.SCP2176, "SCP-2176" },
+            { ItemType.SCP244a, "SCP-244-A" },
+            { ItemType.SCP244b, "SCP-244-B" },
+            { ItemType.AntiSCP207, "Anti SCP-207" },
+            { ItemType.SCP500, "SCP-500" },
+            { ItemType.SCP330, "SCP-330" },
+            { ItemType.SCP268, "SCP-268" },
+        };
+
+        public static string GetFriendlySCPItemName(ItemType scpitem)
+        {
+            if (SCPItemNameMap.TryGetValue(scpitem, out string friendlyName))
+            {
+                return friendlyName;
+            }
+            else
+            {
+                return scpitem.ToString();
+            }
+        }
+    }
 }
