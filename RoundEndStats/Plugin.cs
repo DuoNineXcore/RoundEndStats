@@ -42,6 +42,7 @@ namespace RoundEndStats
             Exiled.Events.Handlers.Scp330.EatingScp330 += achievementEvents.OnEatingScp330;
             Exiled.Events.Handlers.Player.EscapingPocketDimension += achievementEvents.OnPlayerEscapedPocketDimension;
             Exiled.Events.Handlers.Scp096.Enraging += achievementEvents.OnPlayerTriggered096;
+            Exiled.Events.Handlers.Player.UsingItem += achievementEvents.OnItemUsage;
         }
 
         public override void OnDisabled()

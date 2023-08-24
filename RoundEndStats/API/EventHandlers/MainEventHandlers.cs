@@ -45,7 +45,8 @@ namespace RoundEndStats.API.EventHandlers
             int totalEscapes = GetTotalEscapes();
             TimeSpan? playerEscapeTime = GetPlayerEscapeTime(player);
             string formattedEscapeTime = playerEscapeTime.HasValue ? playerEscapeTime.Value.ToString(@"hh\:mm\:ss") : "N/A";
-            var playerTopAchievement = RoundEndStats.Instance.achievementTracker.GetTopUnlockedAchievement(player);
+            var playerTopAchievement = RoundEndStats.Instance.achievementTracker.GetPlayerTopAchievement(player);
+            var globalTopAchievement = RoundEndStats.Instance.achievementTracker.GetGlobalTopAchievement();
 
             string statsMessage = RoundEndStats.Instance.Config.StatsFormat
                 .Replace("{playerName}", player.Nickname)
@@ -53,6 +54,7 @@ namespace RoundEndStats.API.EventHandlers
                 .Replace("{playerDeaths}", playerStats.Deaths.ToString())
                 .Replace("{playerEscapeTime}", formattedEscapeTime)
 
+                .Replace("{globalTopAchievement}", globalTopAchievement.ToString())
                 .Replace("{playerTopAchievement}", playerTopAchievement?.Name ?? "None")
                 .Replace("{matchTime}", playerStats.MatchTime.ToString())
 
@@ -76,7 +78,14 @@ namespace RoundEndStats.API.EventHandlers
                 .Replace("{topHumanRole}", topHumanKillerStats.RoleName)
                 .Replace("{topHumanKills}", topHumanKillerStats.Kills.ToString());
 
-            player.Broadcast(RoundEndStats.Instance.Config.BroadcastDuration, $"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", Broadcast.BroadcastFlags.Normal);
+            if (!RoundEndStats.Instance.Config.IsHint)
+            {
+                player.Broadcast(RoundEndStats.Instance.Config.BroadcastDuration, $"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", Broadcast.BroadcastFlags.Normal);
+            }
+            else
+            {
+                player.ShowHint($"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", RoundEndStats.Instance.Config.BroadcastDuration);
+            }
         }
 
         private (int Kills, int Deaths, int MatchTime) GetPlayerStats(Player player)

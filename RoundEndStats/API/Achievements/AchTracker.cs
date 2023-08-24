@@ -38,7 +38,7 @@ namespace RoundEndStats.API.Achievements
             {
                 foreach (var achievement in playerAchievements)
                 {
-                    if (topAchievement == null || AchievementRegistry.AllAchievements[achievement] > AchievementRegistry.AllAchievements[topAchievement])
+                    if (topAchievement == null || achievement.Importance < topAchievement.Importance)
                     {
                         topAchievement = achievement;
                     }
@@ -59,7 +59,7 @@ namespace RoundEndStats.API.Achievements
 
             foreach (var achievement in playerAchievements)
             {
-                if (playerTopAchievement == null || AchievementRegistry.AchievementImportance[achievement] > AchievementRegistry.AchievementImportance[playerTopAchievement])
+                if (playerTopAchievement == null || achievement.Importance < playerTopAchievement.Importance)
                 {
                     playerTopAchievement = achievement;
                 }
@@ -67,6 +67,7 @@ namespace RoundEndStats.API.Achievements
 
             return playerTopAchievement;
         }
+
 
         public List<Achievement> GetSortedUnlockedAchievements()
         {

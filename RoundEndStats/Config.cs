@@ -11,10 +11,13 @@ namespace RoundEndStats
         [Description("Console Debug logs.")]
         public bool Debug { get; set; } = true;
 
+        [Description("Should it be a hint?")]
+        public bool IsHint { get; set; } = false;
+
         [Description("Duration of the Round End Stats broadcast.")]
         public ushort BroadcastDuration { get; set; } = 10;
 
-        [Description("The size of the same fucking thing.")]
+        [Description("The Size of the broadcast")]
         public int BroadcastSize { get; set; } = 30;
 
         [Description("The text that will be displayed in the broadcast.")]

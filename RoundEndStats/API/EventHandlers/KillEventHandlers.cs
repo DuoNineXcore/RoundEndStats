@@ -35,6 +35,7 @@ namespace RoundEndStats.API.EventHandlers
             }
 
             RoundEndStats.Instance.achievementEvents.OnPlayerKilledZombie(ev);
+            RoundEndStats.Instance.achievementEvents.OnPlayerDeath(ev);
             UpdateKills(ev);
         }
 
