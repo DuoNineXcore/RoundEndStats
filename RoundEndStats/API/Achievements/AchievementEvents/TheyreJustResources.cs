@@ -1,6 +1,5 @@
 ﻿using Exiled.Events.EventArgs.Player;
 using PlayerRoles;
-using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
 
@@ -21,8 +20,11 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
                 scientistKillCount[ev.Attacker]++;
 
+                Utils.LogMessage($"Scientist {ev.Attacker.Nickname} has killed Class-D {ev.Player.Nickname}. Total kills: {scientistKillCount[ev.Attacker]}", Utils.LogLevel.Debug);
+
                 if (scientistKillCount[ev.Attacker] >= 5)
                 {
+                    Utils.LogMessage($"Scientist {ev.Attacker.Nickname} has reached the required kill count for the achievement 'They're just resources.'", Utils.LogLevel.Debug);
                     RoundEndStats.Instance.achievementTracker.AwardAchievement("They're just resources.", ev.Attacker);
                     scientistKillCount.Remove(ev.Attacker);
                 }

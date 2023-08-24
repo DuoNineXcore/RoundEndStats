@@ -17,6 +17,12 @@ namespace RoundEndStats.API.EventHandlers
                 ScpItemUsageEvent scpItemUsageEvent = new ScpItemUsageEvent(ev.Player, ev.Item.Type);
 
                 scpItemUsageLog.Add(scpItemUsageEvent);
+
+                API.Utils.LogMessage($"Player {ev.Player.Nickname} used SCP item: {friendlyName}. Added to SCP item usage log.", Utils.LogLevel.Debug);
+            }
+            else
+            {
+                API.Utils.LogMessage($"Player {ev.Player.Nickname} used an item {ev.Item.Type} that is not recognized as an SCP item.", Utils.LogLevel.Warning);
             }
         }
     }

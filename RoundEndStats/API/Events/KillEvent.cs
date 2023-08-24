@@ -22,7 +22,7 @@ namespace RoundEndStats.API
             DamageInfo = damageInfo;
             TimeOfKill = DateTime.Now;
 
-            Utils.LogMessage($"{attackerRole} - {attackerName} killed {victimRole} - {victimName} // Cause of death: {damageInfo.Type} // Time of kill: {TimeOfKill}", ConsoleColor.DarkCyan);
+            Utils.LogMessage($"{attackerRole} - {attackerName} killed {victimRole} - {victimName} // Cause of death: {damageInfo.Type} // Time of kill: {TimeOfKill}", Utils.LogLevel.Debug);
         }
     }
 }

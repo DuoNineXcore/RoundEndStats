@@ -19,13 +19,20 @@ namespace RoundEndStats.API.Achievements
         public AchievementTracker()
         {
             achievementsUnlocked = new Dictionary<string, bool>();
+            Utils.LogMessage("Achievement Tracker initialized.", Utils.LogLevel.Debug);
         }
 
         public void AwardAchievement(string achievementName, Player ply)
         {
+            if (ply == null)
+            {
+                Utils.LogMessage("Attempted to award achievement to null player.", Utils.LogLevel.Error);
+                return;
+            }
+
             if (!achievementsUnlocked[achievementName])
             {
-                Utils.LogMessage($"{ply} has received the {achievementName} achievement.", ConsoleColor.DarkCyan);
+                Utils.LogMessage($"{ply.Nickname} has received the {achievementName} achievement.", Utils.LogLevel.Info);
                 achievementsUnlocked[achievementName] = true;
             }
         }
@@ -45,13 +52,29 @@ namespace RoundEndStats.API.Achievements
                 }
             }
 
+            if (topAchievement != null)
+            {
+                Utils.LogMessage($"Global top achievement is {topAchievement.Name}.", Utils.LogLevel.Debug);
+            }
+            else
+            {
+                Utils.LogMessage("No global top achievement found.", Utils.LogLevel.Warning);
+            }
+
             return topAchievement;
         }
 
         public Achievement GetPlayerTopAchievement(Player player)
         {
+            if (player == null)
+            {
+                Utils.LogMessage("Attempted to get top achievement for null player.", Utils.LogLevel.Error);
+                return null;
+            }
+
             if (!unlockedAchievements.TryGetValue(player, out List<Achievement> playerAchievements))
             {
+                Utils.LogMessage($"{player.Nickname} has no unlocked achievements.", Utils.LogLevel.Warning);
                 return null;
             }
 
@@ -65,22 +88,32 @@ namespace RoundEndStats.API.Achievements
                 }
             }
 
+            if (playerTopAchievement != null)
+            {
+                Utils.LogMessage($"{player.Nickname}'s top achievement is {playerTopAchievement.Name}.", Utils.LogLevel.Debug);
+            }
+            else
+            {
+                Utils.LogMessage($"{player.Nickname} has no top achievement.", Utils.LogLevel.Warning);
+            }
+
             return playerTopAchievement;
         }
 
-
         public List<Achievement> GetSortedUnlockedAchievements()
         {
-            List<Achievement> unlockedAchievements = new List<Achievement>();
+            List<Achievement> unlockedAchievementsList = new List<Achievement>();
 
             foreach (var achievement in AchievementRegistry.AllAchievements)
             {
                 if (achievementsUnlocked[achievement.Name])
                 {
-                    unlockedAchievements.Add(achievement);
+                    unlockedAchievementsList.Add(achievement);
                 }
             }
-            return unlockedAchievements.OrderBy(a => a.Importance).ToList();
+
+            Utils.LogMessage($"Sorting {unlockedAchievementsList.Count} unlocked achievements.", Utils.LogLevel.Debug);
+            return unlockedAchievementsList.OrderBy(a => a.Importance).ToList();
         }
     }
 }

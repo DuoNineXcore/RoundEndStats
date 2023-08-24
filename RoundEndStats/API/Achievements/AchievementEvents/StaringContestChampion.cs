@@ -15,6 +15,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
         {
             playerWhoTriggered096 = ev.Player;
             survivalEndTime = DateTime.Now.AddSeconds(20);
+            Utils.LogMessage($"{ev.Player.Nickname} has triggered SCP-096.", Utils.LogLevel.Debug);
         }
 
         public void OnAddingTarget(AddingTargetEventArgs ev)
@@ -29,6 +30,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
                 }
 
                 survivalEndTime = newEndTime;
+                Utils.LogMessage($"SCP-096 has added {ev.Target.Nickname} as a target. Updated survival end time to {survivalEndTime}.", Utils.LogLevel.Debug);
             }
         }
 
@@ -39,10 +41,10 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
                 if (playerWhoTriggered096.IsAlive)
                 {
                     RoundEndStats.Instance.achievementTracker.AwardAchievement("Staring Contest Champion", playerWhoTriggered096);
+                    Utils.LogMessage($"{playerWhoTriggered096.Nickname} survived SCP-096's rage and was awarded the 'Staring Contest Champion' achievement.", Utils.LogLevel.Debug);
                 }
-                playerWhoTriggered096 = null; 
+                playerWhoTriggered096 = null;
             }
         }
     }
 }
-

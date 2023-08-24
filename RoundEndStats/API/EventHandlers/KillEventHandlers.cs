@@ -17,17 +17,31 @@ namespace RoundEndStats.API.EventHandlers
 
         public void OnPlayerHurt(HurtingEventArgs ev)
         {
+            if (ev.Player == null)
+            {
+                Utils.LogMessage("Player hurt event triggered with null player.", Utils.LogLevel.Error);
+                return;
+            }
+
             if (ev.Player.Health - ev.Amount <= 0)
             {
                 lastRoleBeforeDeath[ev.Player] = ev.Player.Role.Type;
+                Utils.LogMessage($"Stored last role before death for player {ev.Player.Nickname}.", Utils.LogLevel.Debug);
             }
         }
 
         public void OnPlayerDied(DiedEventArgs ev)
         {
+            if (ev.Player == null || ev.Attacker == null)
+            {
+                Utils.LogMessage("Player died event triggered with null player or attacker.", Utils.LogLevel.Error);
+                return;
+            }
 
             RoleTypeId roleAtDeath = lastRoleBeforeDeath.ContainsKey(ev.Player) ? lastRoleBeforeDeath[ev.Player] : ev.Player.Role.Type;
             killLog.Add(new KillEvent(ev.Attacker.Role.Type, ev.Attacker.Nickname, roleAtDeath, ev.Player.Nickname, ev.DamageHandler));
+
+            Utils.LogMessage($"{ev.Player.Nickname} was killed by {ev.Attacker.Nickname}.", Utils.LogLevel.Debug);
 
             if (ev.Attacker.Role == RoleTypeId.Scp096 && RoundEndStats.Instance.achievementEvents.playersWhoTriggered096.ContainsKey(ev.Player))
             {
@@ -41,10 +55,15 @@ namespace RoundEndStats.API.EventHandlers
 
         private void UpdateKills(DiedEventArgs ev)
         {
+            if (ev.Attacker == null || ev.Player == null)
+            {
+                Utils.LogMessage("Update kills triggered with null player or attacker.", Utils.LogLevel.Error);
+                return;
+            }
+
             if (!playerKillsByRole.ContainsKey(ev.Attacker))
             {
                 playerKillsByRole[ev.Attacker] = new Dictionary<RoleTypeId, int>();
-                ev.Player.Role.Type.GetFullName();
             }
 
             if (!playerKillsByRole[ev.Attacker].ContainsKey(ev.Attacker.Role.Type))
@@ -53,6 +72,7 @@ namespace RoundEndStats.API.EventHandlers
             }
 
             playerKillsByRole[ev.Attacker][ev.Attacker.Role.Type]++;
+            Utils.LogMessage($"Updated kill count for {ev.Attacker.Nickname}.", Utils.LogLevel.Debug);
         }
 
         public bool IsRoleTypeSCP(RoleTypeId roleType)
@@ -90,6 +110,15 @@ namespace RoundEndStats.API.EventHandlers
                 }
             }
 
+            if (topHuman != null)
+            {
+                Utils.LogMessage($"{topHuman.Nickname} is the top human player with {maxKills} kills.", Utils.LogLevel.Info);
+            }
+            else
+            {
+                Utils.LogMessage("No top human player found.", Utils.LogLevel.Warning);
+            }
+
             return topHuman;
         }
 
@@ -98,6 +127,15 @@ namespace RoundEndStats.API.EventHandlers
             var mvp = killLog.GroupBy(k => k.AttackerName)
                              .OrderByDescending(g => g.Count())
                              .FirstOrDefault()?.Key;
+
+            if (mvp != null)
+            {
+                Utils.LogMessage($"{mvp} is the MVP.", Utils.LogLevel.Info);
+            }
+            else
+            {
+                Utils.LogMessage("No MVP found.", Utils.LogLevel.Warning);
+            }
 
             return Player.Get(mvp);
         }

@@ -24,10 +24,13 @@ namespace RoundEndStats.API.EventHandlers
             achievementEvents.pocketDimensionEscapes.Clear();
             achievementEvents.playersWhoTriggered096.Clear();
             killLog.Clear();
+
+            Utils.LogMessage("Cleared event logs on waiting.", Utils.LogLevel.Debug);
         }
 
         public void OnRoundEnd(RoundEndedEventArgs ev)
         {
+            Utils.LogMessage("Round ended. Broadcasting player stats.", Utils.LogLevel.Info);
             foreach (var player in Player.List)
             {
                 BroadcastPlayerStats(player);
@@ -81,18 +84,28 @@ namespace RoundEndStats.API.EventHandlers
             if (!RoundEndStats.Instance.Config.IsHint)
             {
                 player.Broadcast(RoundEndStats.Instance.Config.BroadcastDuration, $"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", Broadcast.BroadcastFlags.Normal);
+                Utils.LogMessage($"Broadcasted stats to player {player.Nickname}.", Utils.LogLevel.Debug);
             }
             else
             {
                 player.ShowHint($"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", RoundEndStats.Instance.Config.BroadcastDuration);
+                Utils.LogMessage($"Displayed hint with stats to player {player.Nickname}.", Utils.LogLevel.Debug);
             }
         }
 
         private (int Kills, int Deaths, int MatchTime) GetPlayerStats(Player player)
         {
+            if (player == null)
+            {
+                Utils.LogMessage("Attempted to get player stats for a null player.", Utils.LogLevel.Error);
+                return (0, 0, 0);
+            }
+
             int playerKills = killLog.Count(k => k.AttackerName == player.Nickname);
             int playerDeaths = killLog.Count(k => k.VictimName == player.Nickname);
             int matchTime = RoundSummary.roundTime;
+
+            Utils.LogMessage($"Retrieved stats for player {player.Nickname}: Kills={playerKills}, Deaths={playerDeaths}, MatchTime={matchTime}", Utils.LogLevel.Debug);
 
             return (playerKills, playerDeaths, matchTime);
         }
@@ -102,6 +115,12 @@ namespace RoundEndStats.API.EventHandlers
             var topKillerEvent = killLog.GroupBy(k => k.AttackerName)
                                         .OrderByDescending(g => g.Count())
                                         .FirstOrDefault();
+
+            if (topKillerEvent == null)
+            {
+                Utils.LogMessage("No top killer found.", Utils.LogLevel.Warning);
+                return ("None", "Unknown Role", 0);
+            }
 
             string topKillerName = topKillerEvent?.Key ?? "None";
             int topKillerKills = topKillerEvent?.Count() ?? 0;
@@ -119,6 +138,12 @@ namespace RoundEndStats.API.EventHandlers
                                            .OrderByDescending(g => g.Count())
                                            .FirstOrDefault();
 
+            if (topScpKillerEvent == null)
+            {
+                Utils.LogMessage("No top SCP killer found.", Utils.LogLevel.Warning);
+                return ("None", "Unknown Role", 0);
+            }
+
             string topScpKillerName = topScpKillerEvent?.Key ?? "None";
             int topScpKills = topScpKillerEvent?.Count() ?? 0;
             RoleTypeId topScpKillerRole = topScpKillerEvent?.First().AttackerRole ?? RoleTypeId.None;
@@ -131,6 +156,13 @@ namespace RoundEndStats.API.EventHandlers
         private (string ColoredName, string RoleName, int Kills) GetTopHumanKillerStats()
         {
             Player topHumanPlayer = GetTopHumanPlayer();
+
+            if (topHumanPlayer == null)
+            {
+                Utils.LogMessage("No top human player found.", Utils.LogLevel.Warning);
+                return ("None", "Unknown Role", 0);
+            }
+
             string topHumanNameColored = "None";
             string topHumanRoleName = "Unknown Role";
             int topHumanKills = 0;
@@ -157,6 +189,12 @@ namespace RoundEndStats.API.EventHandlers
             var topScpItemUserGroup = scpItemUsageLog.GroupBy(u => u.User)
                                                      .OrderByDescending(g => g.Count())
                                                      .FirstOrDefault();
+
+            if (topScpItemUserGroup == null)
+            {
+                Utils.LogMessage("No top SCP item user found.", Utils.LogLevel.Warning);
+                return ("None", "Unknown Role", 0, "None");
+            }
 
             Player topScpItemUser = topScpItemUserGroup?.Key;
             int scpUses = topScpItemUserGroup?.Count() ?? 0;

@@ -34,10 +34,12 @@ namespace RoundEndStats.API
         {
             if (RoleNameMap.TryGetValue(roleId, out string friendlyName))
             {
+                Utils.LogMessage($"Retrieved friendly role name for {roleId}: {friendlyName}", Utils.LogLevel.Debug);
                 return friendlyName;
             }
             else
             {
+                Utils.LogMessage($"Role ID {roleId} not found in RoleNameMap. Using default name.", Utils.LogLevel.Error);
                 return roleId.ToString();
             }
         }
@@ -61,10 +63,12 @@ namespace RoundEndStats.API
         {
             if (SCPItemNameMap.TryGetValue(scpitem, out string friendlyName))
             {
+                Utils.LogMessage($"Retrieved friendly SCP item name for {scpitem}: {friendlyName}", Utils.LogLevel.Debug);
                 return friendlyName;
             }
             else
             {
+                Utils.LogMessage($"SCP item {scpitem} not found in SCPItemNameMap. Using default name.", Utils.LogLevel.Error);
                 return scpitem.ToString();
             }
         }
