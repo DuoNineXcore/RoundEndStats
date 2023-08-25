@@ -2,8 +2,6 @@
 using RoundEndStats.API.Achievements;
 using RoundEndStats.API.Achievements.AchievementEvents;
 using RoundEndStats.API.EventHandlers;
-using RoundEndStats.API;
-using System.Diagnostics; // Required for StackFrame
 
 namespace RoundEndStats
 {
@@ -72,12 +70,18 @@ namespace RoundEndStats
             Exiled.Events.Handlers.Server.RoundStarted -= mainEventHandlers.OnRoundStart;
             Exiled.Events.Handlers.Player.Escaping -= mainEventHandlers.OnPlayerEscape;
 
-            //item usage events
+            //item usage events 
             Exiled.Events.Handlers.Player.UsedItem -= mainEventHandlers.OnUsedItem;
 
             //main events
             Exiled.Events.Handlers.Server.RoundEnded -= mainEventHandlers.OnRoundEnd;
             Exiled.Events.Handlers.Server.WaitingForPlayers -= mainEventHandlers.OnWaiting;
+
+            //achievements
+            Exiled.Events.Handlers.Scp330.EatingScp330 -= achievementEvents.OnEatingScp330;
+            Exiled.Events.Handlers.Player.EscapingPocketDimension -= achievementEvents.OnPlayerEscapedPocketDimension;
+            Exiled.Events.Handlers.Scp096.Enraging -= achievementEvents.OnPlayerTriggered096;
+            Exiled.Events.Handlers.Player.UsingItem -= achievementEvents.OnItemUsage;
 
             API.Utils.LogMessage("RoundEndStats plugin disabled and event handlers unregistered.", API.Utils.LogLevel.Info);
         }

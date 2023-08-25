@@ -1,6 +1,4 @@
 ﻿using Exiled.API.Features;
-using PlayerRoles;
-using System;
 
 namespace RoundEndStats.API.Events
 {

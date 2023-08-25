@@ -1,9 +1,6 @@
-﻿using Exiled.API.Extensions;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using PlayerRoles;
-using RoundEndStats.API;
-using RoundEndStats.API.Events;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,13 +40,13 @@ namespace RoundEndStats.API.EventHandlers
 
             Utils.LogMessage($"{ev.Player.Nickname} was killed by {ev.Attacker.Nickname}.", Utils.LogLevel.Debug);
 
-            if (ev.Attacker.Role == RoleTypeId.Scp096 && RoundEndStats.Instance.achievementEvents.playersWhoTriggered096.ContainsKey(ev.Player))
+            if (ev.Attacker.Role == RoleTypeId.Scp096 && achievementEvents.playersWhoTriggered096.ContainsKey(ev.Player))
             {
-                RoundEndStats.Instance.achievementEvents.playersWhoTriggered096.Remove(ev.Player);
+                achievementEvents.playersWhoTriggered096.Remove(ev.Player);
             }
 
-            RoundEndStats.Instance.achievementEvents.OnPlayerKilledZombie(ev);
-            RoundEndStats.Instance.achievementEvents.OnPlayerDeath(ev);
+            achievementEvents.OnPlayerKilledZombie(ev);
+            achievementEvents.OnPlayerDeath(ev);
             UpdateKills(ev);
         }
 

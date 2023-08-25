@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
-using Exiled.API.Enums;
 using PlayerRoles;
 using UnityEngine;
 using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace RoundEndStats.API
 {
@@ -83,9 +81,6 @@ namespace RoundEndStats.API
             if (level == LogLevel.Error)
                 return true;
 
-            if (RoundEndStats.Instance.Config.Debug && level == LogLevel.Debug)
-                return true;
-
             return level == LogLevel.Info;
         }
 
@@ -96,11 +91,11 @@ namespace RoundEndStats.API
                 case LogLevel.Error:
                     return ConsoleColor.Red;
                 case LogLevel.Warning:
-                    return ConsoleColor.DarkCyan;
+                    return ConsoleColor.DarkBlue;
                 case LogLevel.Debug:
                     return ConsoleColor.Blue;
                 case LogLevel.Info:
-                    return ConsoleColor.Cyan;
+                    return ConsoleColor.Blue;
                 default:
                     return ConsoleColor.White;
             }

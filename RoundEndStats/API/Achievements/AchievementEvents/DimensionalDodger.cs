@@ -1,10 +1,6 @@
 ﻿using Exiled.Events.EventArgs.Player;
-using System;
 using Exiled.API.Features;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
@@ -30,7 +26,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
             if (pocketDimensionEscapes[ev.Player] == 2)
             {
-                RoundEndStats.Instance.achievementTracker.AwardAchievement("Dimensional Dodger", ev.Player);
+                achievementTracker.AwardAchievement("Dimensional Dodger", ev.Player);
                 Utils.LogMessage($"{ev.Player.Nickname} was awarded the 'Dimensional Dodger' achievement.", Utils.LogLevel.Info);
             }
         }

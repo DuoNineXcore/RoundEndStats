@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Achievements\AchConstructor.cs" />
+    <Compile Include="API\Achievements\AchievementEvents\AchEventsConstructor.cs" />
     <Compile Include="API\Achievements\AchievementEvents\CaffeineJunkie.cs" />
     <Compile Include="API\Achievements\AchievementEvents\OneAgainstMany.cs" />
     <Compile Include="API\Achievements\AchievementEvents\Peacemaker.cs" />

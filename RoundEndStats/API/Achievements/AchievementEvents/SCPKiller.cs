@@ -1,10 +1,6 @@
 ﻿using PlayerRoles;
 using Exiled.API.Features;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
@@ -24,12 +20,12 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
             if (scpKills == 1)
             {
-                RoundEndStats.Instance.achievementTracker.AwardAchievement("SCP-Killer", killer);
+                achievementTracker.AwardAchievement("SCP-Killer", killer);
                 Utils.LogMessage($"{killer.Nickname} was awarded the 'SCP-Killer' achievement.", Utils.LogLevel.Debug);
             }
             else if (scpKills > 1)
             {
-                RoundEndStats.Instance.achievementTracker.AwardAchievement("SCP-Killer II", killer);
+                achievementTracker.AwardAchievement("SCP-Killer II", killer);
                 Utils.LogMessage($"{killer.Nickname} was awarded the 'SCP-Killer II' achievement.", Utils.LogLevel.Debug);
             }
         }

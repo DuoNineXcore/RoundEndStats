@@ -18,11 +18,11 @@ namespace RoundEndStats.API.EventHandlers
 
                 scpItemUsageLog.Add(scpItemUsageEvent);
 
-                API.Utils.LogMessage($"Player {ev.Player.Nickname} used SCP item: {friendlyName}. Added to SCP item usage log.", Utils.LogLevel.Debug);
+                Utils.LogMessage($"Player {ev.Player.Nickname} used SCP item: {friendlyName}. Added to SCP item usage log.", Utils.LogLevel.Debug);
             }
             else
             {
-                API.Utils.LogMessage($"Player {ev.Player.Nickname} used an item {ev.Item.Type} that is not recognized as an SCP item.", Utils.LogLevel.Warning);
+                Utils.LogMessage($"Player {ev.Player.Nickname} used an item {ev.Item.Type} that is not recognized as an SCP item.", Utils.LogLevel.Warning);
             }
         }
     }

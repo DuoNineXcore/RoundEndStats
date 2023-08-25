@@ -1,6 +1,5 @@
 ﻿using Exiled.Events.EventArgs.Player;
 using System.Collections.Generic;
-using System.Linq;
 using Exiled.API.Features;
 using PlayerRoles;
 using Exiled.Events.EventArgs.Server;
@@ -41,7 +40,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
                 if (mtfChaosKillCounts[ev.Attacker] >= (2.0 / 3.0) * totalMtfChaosAtSpawn)
                 {
-                    RoundEndStats.Instance.achievementTracker.AwardAchievement("One Against Many", ev.Attacker);
+                    achievementTracker.AwardAchievement("One Against Many", ev.Attacker);
                     Utils.LogMessage($"{ev.Attacker.Nickname} was awarded the 'One Against Many' achievement.", Utils.LogLevel.Info);
                 }
             }

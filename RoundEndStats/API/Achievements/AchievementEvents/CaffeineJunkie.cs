@@ -56,7 +56,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
         {
             if (colaConsumer != null && colaTimerStart.HasValue && DateTime.Now - colaTimerStart.Value >= TimeSpan.FromMinutes(2))
             {
-                RoundEndStats.Instance.achievementTracker.AwardAchievement("Caffeine Junkie", colaConsumer);
+                achievementTracker.AwardAchievement("Caffeine Junkie", colaConsumer);
                 Utils.LogMessage($"{colaConsumer.Nickname} was awarded the 'Caffeine Junkie' achievement.", Utils.LogLevel.Info);
                 colaConsumer = null;
                 colaTimerStart = null;

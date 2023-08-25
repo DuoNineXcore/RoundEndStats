@@ -25,7 +25,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
                 if (scientistKillCount[ev.Attacker] >= 5)
                 {
                     Utils.LogMessage($"Scientist {ev.Attacker.Nickname} has reached the required kill count for the achievement 'They're just resources.'", Utils.LogLevel.Debug);
-                    RoundEndStats.Instance.achievementTracker.AwardAchievement("They're just resources.", ev.Attacker);
+                    achievementTracker.AwardAchievement("They're just resources.", ev.Attacker);
                     scientistKillCount.Remove(ev.Attacker);
                 }
             }

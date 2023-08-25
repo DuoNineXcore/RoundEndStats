@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
-using Exiled.API.Enums;
 using PlayerRoles;
-using UnityEngine;
-using RoundEndStats.API;
-using LiteNetLib4Mirror.Open.Nat;
-using System.Diagnostics;
-using System.Runtime.Remoting.Messaging;
-using static Achievements.AchievementManager;
+using RoundEndStats.API.Achievements;
+using RoundEndStats.API.Achievements.AchievementEvents;
 
 namespace RoundEndStats.API.EventHandlers
 {
     public partial class MainEventHandlers
     {
+        private AchievementTracker achievementTracker { get; set; }
+        private AchievementEvents achievementEvents { get; set; }
+
+        public MainEventHandlers()
+        {
+            achievementTracker = new AchievementTracker();
+            achievementEvents = new AchievementEvents();
+        }
+
         public void OnWaiting()
         {
-            var achievementEvents = RoundEndStats.Instance.achievementEvents;
             achievementEvents.pocketDimensionEscapes.Clear();
             achievementEvents.playersWhoTriggered096.Clear();
             killLog.Clear();
@@ -33,53 +35,67 @@ namespace RoundEndStats.API.EventHandlers
             Utils.LogMessage("Round ended. Broadcasting player stats.", Utils.LogLevel.Info);
             foreach (var player in Player.List)
             {
+                Utils.LogMessage($"Player Stats are going to be broadcasted to player: {player}", Utils.LogLevel.Info);
                 BroadcastPlayerStats(player);
+                Utils.LogMessage($"Player Stats Broadcasted to player: {player}", Utils.LogLevel.Info);
             }
         }
 
         private void BroadcastPlayerStats(Player player)
         {
-            var playerStats = GetPlayerStats(player);
-            var topKillerStats = GetTopKillerStats();
-            var topScpKillerStats = GetTopScpKillerStats();
-            var topHumanKillerStats = GetTopHumanKillerStats();
-            var topScpItemUserStats = GetTopScpItemUserStats();
-            Player firstEscapee = GetFirstPlayerToEscape();
-            int totalEscapes = GetTotalEscapes();
-            TimeSpan? playerEscapeTime = GetPlayerEscapeTime(player);
-            string formattedEscapeTime = playerEscapeTime.HasValue ? playerEscapeTime.Value.ToString(@"hh\:mm\:ss") : "N/A";
-            var playerTopAchievement = RoundEndStats.Instance.achievementTracker.GetPlayerTopAchievement(player);
-            var globalTopAchievement = RoundEndStats.Instance.achievementTracker.GetGlobalTopAchievement();
+            try
+            {
+                Utils.LogMessage($"Constructing player broadcast", Utils.LogLevel.Info);
 
-            string statsMessage = RoundEndStats.Instance.Config.StatsFormat
-                .Replace("{playerName}", player.Nickname)
-                .Replace("{playerKills}", playerStats.Kills.ToString())
-                .Replace("{playerDeaths}", playerStats.Deaths.ToString())
-                .Replace("{playerEscapeTime}", formattedEscapeTime)
+                if (RoundEndStats.Instance == null)
+                {
+                    Utils.LogMessage($"RoundEndStats.Instance is null", Utils.LogLevel.Error);
+                    return;
+                }
+                var playerStats = GetPlayerStats(player);
+                var topKillerStats = GetTopKillerStats();
+                var topScpKillerStats = GetTopScpKillerStats();
+                var topHumanKillerStats = GetTopHumanKillerStats();
+                var topScpItemUserStats = GetTopScpItemUserStats();
+                Player firstEscapee = GetFirstPlayerToEscape();
+                int totalEscapes = GetTotalEscapes();
+                TimeSpan? playerEscapeTime = GetPlayerEscapeTime(player);
+                string formattedEscapeTime = playerEscapeTime.HasValue ? playerEscapeTime.Value.ToString(@"hh\:mm\:ss") : "N/A";
+                var playerTopAchievement = achievementTracker.GetPlayerTopAchievement(player);
+                var globalTopAchievement = achievementTracker.GetGlobalTopAchievement();
+                Utils.LogMessage($"Constructed player broadcast", Utils.LogLevel.Info);
 
-                .Replace("{globalTopAchievement}", globalTopAchievement.ToString())
-                .Replace("{playerTopAchievement}", playerTopAchievement?.Name ?? "None")
-                .Replace("{matchTime}", playerStats.MatchTime.ToString())
+                Utils.LogMessage($"Constructing stats message", Utils.LogLevel.Info);
+                string statsMessage = RoundEndStats.Instance.Config.StatsFormat
+                    .Replace("{playerName}", player.Nickname)
+                    .Replace("{playerKills}", playerStats.Kills.ToString())
+                    .Replace("{playerDeaths}", playerStats.Deaths.ToString())
+                    .Replace("{playerEscapeTime}", formattedEscapeTime)
 
-                .Replace("{firstEscapee}", firstEscapee?.Nickname ?? "None")
-                .Replace("{totalEscapes}", totalEscapes.ToString())
+                    .Replace("{globalTopAchievement}", globalTopAchievement.ToString())
+                    .Replace("{playerTopAchievement}", playerTopAchievement?.Name ?? "None")
+                    .Replace("{matchTime}", playerStats.MatchTime.ToString())
 
-                .Replace("{topKiller}", topKillerStats.ColoredName)
-                .Replace("{topKillerRole}", topKillerStats.RoleName)
-                .Replace("{topKillerKills}", topKillerStats.Kills.ToString())
+                    .Replace("{firstEscapee}", firstEscapee?.Nickname ?? "None")
+                    .Replace("{totalEscapes}", totalEscapes.ToString())
 
-                .Replace("{topSCPName}", topScpKillerStats.ColoredName)
-                .Replace("{topSCPRole}", topScpKillerStats.RoleName)
-                .Replace("{topSCPKills}", topScpKillerStats.Kills.ToString())
+                    .Replace("{topKiller}", topKillerStats.ColoredName)
+                    .Replace("{topKillerRole}", topKillerStats.RoleName)
+                    .Replace("{topKillerKills}", topKillerStats.Kills.ToString())
 
-                .Replace("{topSCPItemUserName}", topScpItemUserStats.ColoredName)
-                .Replace("{topSCPItemUserRole}", topScpItemUserStats.RoleName)
-                .Replace("{topSCPItemUserCount}", topScpItemUserStats.ScpUses.ToString())
-                .Replace("{topSCPItemUserList}", topScpItemUserStats.ItemList)
+                    .Replace("{topSCPName}", topScpKillerStats.ColoredName)
+                    .Replace("{topSCPRole}", topScpKillerStats.RoleName)
+                    .Replace("{topSCPKills}", topScpKillerStats.Kills.ToString())
 
-                .Replace("{topHumanName}", topHumanKillerStats.ColoredName)
-                .Replace("{topHumanRole}", topHumanKillerStats.RoleName)
-                .Replace("{topHumanKills}", topHumanKillerStats.Kills.ToString());
+                    .Replace("{topSCPItemUserName}", topScpItemUserStats.ColoredName)
+                    .Replace("{topSCPItemUserRole}", topScpItemUserStats.RoleName)
+                    .Replace("{topSCPItemUserCount}", topScpItemUserStats.ScpUses.ToString())
+                    .Replace("{topSCPItemUserList}", topScpItemUserStats.ItemList)
+
+                    .Replace("{topHumanName}", topHumanKillerStats.ColoredName)
+                    .Replace("{topHumanRole}", topHumanKillerStats.RoleName)
+                    .Replace("{topHumanKills}", topHumanKillerStats.Kills.ToString());
+                    Utils.LogMessage($"Stats message constructed, broadcasting.", Utils.LogLevel.Info);
 
             if (!RoundEndStats.Instance.Config.IsHint)
             {
@@ -90,6 +106,11 @@ namespace RoundEndStats.API.EventHandlers
             {
                 player.ShowHint($"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", RoundEndStats.Instance.Config.BroadcastDuration);
                 Utils.LogMessage($"Displayed hint with stats to player {player.Nickname}.", Utils.LogLevel.Debug);
+            }
+            }
+            catch (Exception ex)
+            {
+                Utils.LogMessage($"An error occurred while broadcasting player stats: {ex}", Utils.LogLevel.Error);
             }
         }
 

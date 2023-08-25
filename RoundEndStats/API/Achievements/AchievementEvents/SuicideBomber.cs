@@ -1,10 +1,6 @@
 ﻿using Exiled.Events.EventArgs.Scp330;
 using InventorySystem.Items.Usables.Scp330;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
@@ -25,7 +21,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
                 if (explosionKills >= 5)
                 {
                     Utils.LogMessage($"{ev.Player.Nickname} has the required explosion kills after eating the pink candy.", Utils.LogLevel.Debug);
-                    RoundEndStats.Instance.achievementTracker.AwardAchievement("Suicide Bomber", ev.Player);
+                    achievementTracker.AwardAchievement("Suicide Bomber", ev.Player);
                 }
             }
         }

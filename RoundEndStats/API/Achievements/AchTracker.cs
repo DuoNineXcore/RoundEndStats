@@ -1,11 +1,4 @@
 ﻿using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
-using Exiled.Events.EventArgs.Scp096;
-using Exiled.Events.EventArgs.Scp330;
-using InventorySystem.Items.Usables.Scp330;
-using PlayerRoles;
-using RoundEndStats.API.EventHandlers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

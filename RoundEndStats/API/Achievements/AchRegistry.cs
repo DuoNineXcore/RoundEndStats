@@ -10,8 +10,8 @@ namespace RoundEndStats.API.Achievements
     {
         public static List<Achievement> AllAchievements = new List<Achievement>
         {
-            new Achievement { Name = "SCP-Killer", Description = "Killed an SCP.", Importance = 1 },
-            new Achievement { Name = "SCP-Killer II", Description = "Killed more than one SCP.", Importance = 2 },
+            new Achievement { Name = "SCP-Killer II", Description = "Killed more than one SCP.", Importance = 1 },
+            new Achievement { Name = "SCP-Killer", Description = "Killed an SCP.", Importance = 2 },
             new Achievement { Name = "One Against Many", Description = "Killed a significant portion of a respawn wave.", Importance = 3 },
             new Achievement { Name = "Dimensional Dodger", Description = "Escaped SCP-106's pocket dimension twice.", Importance = 4 },
             new Achievement { Name = "Staring Contest Champion", Description = "Survived SCP-096's rage.", Importance = 5 },

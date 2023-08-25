@@ -40,7 +40,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
             {
                 if (playerWhoTriggered096.IsAlive)
                 {
-                    RoundEndStats.Instance.achievementTracker.AwardAchievement("Staring Contest Champion", playerWhoTriggered096);
+                    achievementTracker.AwardAchievement("Staring Contest Champion", playerWhoTriggered096);
                     Utils.LogMessage($"{playerWhoTriggered096.Nickname} survived SCP-096's rage and was awarded the 'Staring Contest Champion' achievement.", Utils.LogLevel.Debug);
                 }
                 playerWhoTriggered096 = null;

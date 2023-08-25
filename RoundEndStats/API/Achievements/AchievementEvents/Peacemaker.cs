@@ -26,7 +26,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
             if (kills == 0 && initialRoles.TryGetValue(survivor, out var initialRole) && initialRole == survivor.Role.Type)
             {
-                RoundEndStats.Instance.achievementTracker.AwardAchievement("Peacemaker", survivor);
+                achievementTracker.AwardAchievement("Peacemaker", survivor);
                 Utils.LogMessage($"{survivor.Nickname} was awarded the 'Peacemaker' achievement.", Utils.LogLevel.Debug);
             }
         }

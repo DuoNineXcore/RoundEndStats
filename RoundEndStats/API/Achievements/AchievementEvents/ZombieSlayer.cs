@@ -30,7 +30,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
                 if (zombieKillCounts[ev.Attacker] == 5)
                 {
-                    RoundEndStats.Instance.achievementTracker.AwardAchievement("Zombie Slayer", ev.Attacker);
+                    achievementTracker.AwardAchievement("Zombie Slayer", ev.Attacker);
                     Utils.LogMessage($"{ev.Attacker.Nickname} has been awarded the 'Zombie Slayer' achievement.", Utils.LogLevel.Info);
                 }
             }

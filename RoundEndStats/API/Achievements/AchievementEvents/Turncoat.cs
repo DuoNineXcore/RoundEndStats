@@ -2,7 +2,6 @@
 using PlayerRoles;
 using System.Collections.Generic;
 using Exiled.API.Features;
-using System.Linq;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
@@ -52,7 +51,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 
             if (ev.NewRole == RoleTypeId.ChaosConscript && handcuffedPlayers.TryGetValue(ev.Player, out Player cuffer) && ev.Player.IsCuffed)
             {
-                RoundEndStats.Instance.achievementTracker.AwardAchievement("Turncoat", cuffer);
+                achievementTracker.AwardAchievement("Turncoat", cuffer);
                 Utils.LogMessage($"{cuffer.Nickname} has been awarded the 'Turncoat' achievement for converting {ev.Player.Nickname}.", Utils.LogLevel.Info);
                 handcuffedPlayers.Remove(ev.Player);
             }
