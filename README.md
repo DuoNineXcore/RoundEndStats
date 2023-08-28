@@ -1,6 +1,8 @@
 # Round End Stats
 The RoundEndStats plugin provides server administrators with a customizable way to display round-end statistics to players. With a variety of placeholders, server admins can shape their round-end broadcast to their will. as shown by the list below. these are the commands that server admins can put in the "DisplayMessage" field that is in the EXILED config file.
 
+ALSO THIS AINT DONE YET!!!!!!!!!!!! DONT USE IT!!!!!!!!!!
+
 # Config
 ```
 later
