@@ -69,8 +69,8 @@ namespace RoundEndStats.API.EventHandlers
             playerKillsByRole[atk][atk.Role]++;
             Utils.LogMessage($"Updated kill count for {atk.Nickname}.", Utils.LogLevel.Debug);
 
-            achievementEvents.OnPlayerKilledZombie(ply);
-            achievementEvents.OnPlayerDeath(ply);
+            achievementEvents.OnPlayerKilledZombie(ply, atk, dmg);
+            achievementEvents.On207PlayerDeath(ply, atk, dmg);
         }
 
         public bool IsRoleTypeSCP(RoleTypeId roleType)

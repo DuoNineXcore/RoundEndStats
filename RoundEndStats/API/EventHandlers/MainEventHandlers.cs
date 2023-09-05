@@ -143,11 +143,11 @@ namespace RoundEndStats.API.EventHandlers
             string topKillerName = topKillerEvent?.Key ?? "None";
             int topKillerKills = topKillerEvent?.Count() ?? 0;
             RoleTypeId topKillerRole = topKillerEvent?.First().AttackerRole ?? RoleTypeId.None;
-            string topKillerColor = topKillerRole.GetColor().ToHex();
+            string topKillerColor = Player.Get(topKillerName)?.ReferenceHub.roleManager.CurrentRole.RoleColor.ToHex();
             string coloredName = $"<color={topKillerColor}>{topKillerName}</color>";
-
             return (coloredName, topKillerRole.ToString(), topKillerKills);
         }
+
 
         private (string ColoredName, string RoleName, int Kills) GetTopScpKillerStats()
         {
@@ -165,7 +165,7 @@ namespace RoundEndStats.API.EventHandlers
             string topScpKillerName = topScpKillerEvent?.Key ?? "None";
             int topScpKills = topScpKillerEvent?.Count() ?? 0;
             RoleTypeId topScpKillerRole = topScpKillerEvent?.First().AttackerRole ?? RoleTypeId.None;
-            string topScpKillerColor = topScpKillerRole.GetColor().ToHex();
+            string topScpKillerColor = Player.Get(topScpKillerName)?.ReferenceHub.roleManager.CurrentRole.RoleColor.ToHex();
             string coloredName = $"<color={topScpKillerColor}>{topScpKillerName}</color>";
 
             return (coloredName, topScpKillerRole.ToString(), topScpKills);
@@ -195,7 +195,7 @@ namespace RoundEndStats.API.EventHandlers
                 topHumanKills = topHumanKillerEvent?.Count() ?? 0;
                 RoleTypeId topHumanRole = topHumanKillerEvent?.Key ?? RoleTypeId.None;
                 topHumanRoleName = NameFormatter.RoleNameMap.TryGetValue(topHumanRole, out var humanName) ? humanName : topHumanRole.ToString();
-                string topHumanColor = topHumanRole.GetColor().ToHex();
+                string topHumanColor = topHumanPlayer?.ReferenceHub.roleManager.CurrentRole.RoleColor.ToHex();
                 topHumanNameColored = $"<color={topHumanColor}>{topHumanPlayer.Nickname}</color>";
             }
 
@@ -223,7 +223,7 @@ namespace RoundEndStats.API.EventHandlers
             }
 
             string roleName = topScpItemUser.Role.ToString();
-            string color = topScpItemUser.Role.GetColor().ToHex();
+            string color = topScpItemUser?.ReferenceHub.roleManager.CurrentRole.RoleColor.ToHex();
             string coloredName = $"<color={color}>{topScpItemUser.Nickname}</color>";
 
             List<string> itemsUsed = topScpItemUserGroup.Select(u => NameFormatter.GetFriendlySCPItemName(u.ScpItem)).ToList();

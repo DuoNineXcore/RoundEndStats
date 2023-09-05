@@ -12,7 +12,6 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
     {
         private Dictionary<Player, int> zombieKillCounts = new Dictionary<Player, int>();
 
-        [PluginEvent(ServerEventType.PlayerDeath)]
         public void OnPlayerKilledZombie(Player ply, Player atk, DamageHandlerBase dmg)
         {
             if (ply == null || atk == null)

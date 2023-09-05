@@ -11,7 +11,6 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
 {
     public partial class AchievementEvents
     {
-        [PluginEvent(ServerEventType.PlayerDeath)]
         public void TrackSCPDeath(Player scp, Player atk, DamageHandlerBase dmg)
         {
             var scpKills = mainEventHandlers.killLog.Count(k =>

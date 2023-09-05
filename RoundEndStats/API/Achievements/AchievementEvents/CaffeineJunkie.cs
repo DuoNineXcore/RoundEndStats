@@ -41,8 +41,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
             }
         }
 
-        [PluginEvent(ServerEventType.PlayerDeath)]
-        public void OnPlayerDeath(Player ply, Player atk, DamageHandlerBase dmg)
+        public void On207PlayerDeath(Player ply, Player atk, DamageHandlerBase dmg)
         {
             if (ply == null)
             {
