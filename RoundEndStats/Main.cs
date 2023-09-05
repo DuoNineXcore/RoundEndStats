@@ -10,9 +10,9 @@ namespace RoundEndStats
     {
         public static RoundEndStats Instance;
 
-        public MainEventHandlers mainEventHandlers = new MainEventHandlers();
-        public AchievementTracker achievementTracker = new AchievementTracker();
-        public AchievementEvents achievementEvents = new AchievementEvents();
+        public MainEventHandlers mainEventHandlers;
+        public AchievementTracker achievementTracker;
+        public AchievementEvents achievementEvents;
 
         [PluginEntryPoint("RoundEndStats", "1.0.0", "Yeah", "DuoNineXcore")]
         void OnEnabled()
@@ -21,8 +21,13 @@ namespace RoundEndStats
 
             Instance = this;
 
+            achievementTracker = new AchievementTracker();
+            achievementEvents = new AchievementEvents(achievementTracker, mainEventHandlers);
+            mainEventHandlers = new MainEventHandlers(achievementTracker, achievementEvents);
+
             EventManager.RegisterEvents(mainEventHandlers);
             EventManager.RegisterEvents(achievementEvents);
+
             API.Utils.LogMessage("RoundEndStats Enabled.", API.Utils.LogLevel.Info);
         }
 
@@ -32,12 +37,14 @@ namespace RoundEndStats
             API.Utils.LogMessage("Disabling RoundEndStats plugin...", API.Utils.LogLevel.Info);
 
             Instance = null;
+
             mainEventHandlers = null;
             achievementTracker = null;
             achievementEvents = null;
 
             EventManager.UnregisterEvents(mainEventHandlers);
-            EventManager.UnregisterEvents(mainEventHandlers);
+            EventManager.UnregisterEvents(achievementEvents);
+
             API.Utils.LogMessage("RoundEndStats Disabled.", API.Utils.LogLevel.Info);
         }
 

@@ -24,10 +24,13 @@ namespace RoundEndStats.API.EventHandlers
                 return;
             }
 
-            if (ply.Health - ply.Health <= 0)
+            if (ply.Health <= 0)
             {
-                lastRoleBeforeDeath[ply] = ply.Role;
-                Utils.LogMessage($"Stored last role before death for player {ply.Nickname}.", Utils.LogLevel.Debug);
+                if (atk != null)
+                {
+                    lastRoleBeforeDeath[ply] = ply.Role;
+                    Utils.LogMessage($"Stored last role before death for player {ply.Nickname}.", Utils.LogLevel.Debug);
+                }
             }
         }
 

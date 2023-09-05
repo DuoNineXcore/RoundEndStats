@@ -21,7 +21,6 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
             }
         }
 
-        [PluginEvent(ServerEventType.RoundEnd)]
         public void TrackSurvivalWithoutKilling(Player survivor)
         {
             var mainEventHandlers = RoundEndStats.Instance.mainEventHandlers;

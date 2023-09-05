@@ -6,14 +6,8 @@ namespace RoundEndStats.API.Achievements
 {
     public class AchievementTracker
     {
-        public Dictionary<string, bool> achievementsUnlocked;
+        public Dictionary<string, bool> achievementsUnlocked = new Dictionary<string, bool>();
         private Dictionary<Player, List<Achievement>> unlockedAchievements = new Dictionary<Player, List<Achievement>>();
-
-        public AchievementTracker()
-        {
-            achievementsUnlocked = new Dictionary<string, bool>();
-            Utils.LogMessage("Achievement Tracker initialized.", Utils.LogLevel.Info);
-        }
 
         public void AwardAchievement(string achievementName, Player ply)
         {

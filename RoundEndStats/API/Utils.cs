@@ -73,8 +73,7 @@ namespace RoundEndStats.API
             string methodName = method.Name;
             string className = method.DeclaringType.Name;
 
-            ConsoleColor color = GetColorForLevel(level);
-            Log.Raw($"[RoundEndStats - {className}.{methodName} - {level}] {message}");
+            Log.Debug($"[{className}.{methodName} - {level}] {message}");
         }
 
         private static bool ShouldLog(LogLevel level)
@@ -83,23 +82,6 @@ namespace RoundEndStats.API
                 return true;
 
             return level == LogLevel.Info;
-        }
-
-        private static ConsoleColor GetColorForLevel(LogLevel level)
-        {
-            switch (level)
-            {
-                case LogLevel.Error:
-                    return ConsoleColor.Red;
-                case LogLevel.Warning:
-                    return ConsoleColor.DarkBlue;
-                case LogLevel.Debug:
-                    return ConsoleColor.Blue;
-                case LogLevel.Info:
-                    return ConsoleColor.Blue;
-                default:
-                    return ConsoleColor.White;
-            }
         }
 
         public static void IncrementValueInDictionary(Player player, Dictionary<Player, int> dictionary)

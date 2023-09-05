@@ -13,8 +13,14 @@ namespace RoundEndStats.API.EventHandlers
 {
     public partial class MainEventHandlers
     {
-        private AchievementTracker achievementTracker = new AchievementTracker();
-        private AchievementEvents achievementEvents = new AchievementEvents();
+        private AchievementTracker achievementTracker;
+        private AchievementEvents achievementEvents;
+
+        public MainEventHandlers(AchievementTracker tracker, AchievementEvents events)
+        {
+            achievementTracker = tracker;
+            achievementEvents = events;
+        }
 
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         public void OnWaiting()
@@ -27,14 +33,13 @@ namespace RoundEndStats.API.EventHandlers
         }
 
         [PluginEvent(ServerEventType.RoundEnd)]
-        public void OnRoundEnd(Player ply)
+        public void OnRoundEnd(RoundSummary.LeadingTeam leadingTeam)
         {
             Utils.LogMessage("Round ended. Broadcasting player stats.", Utils.LogLevel.Info);
             foreach (var player in Player.GetPlayers())
             {
-                Utils.LogMessage($"Player Stats are going to be broadcasted to player: {player}", Utils.LogLevel.Info);
+                achievementEvents.TrackSurvivalWithoutKilling(player);
                 BroadcastPlayerStats(player);
-                Utils.LogMessage($"Player Stats Broadcasted to player: {player}", Utils.LogLevel.Info);
             }
         }
 
