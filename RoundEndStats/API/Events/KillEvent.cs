@@ -1,8 +1,8 @@
-﻿using Exiled.API.Features.DamageHandlers;
-using PlayerRoles;
+﻿using PlayerRoles;
 using System;
+using PlayerStatsSystem;
 
-namespace RoundEndStats.API
+namespace RoundEndStats.API.Events
 {
     public class KillEvent
     {
@@ -10,10 +10,10 @@ namespace RoundEndStats.API
         public string AttackerName { get; set; }
         public RoleTypeId VictimRole { get; set; }
         public string VictimName { get; set; }
-        public DamageHandler DamageInfo { get; set; }
+        public DamageHandlerBase DamageInfo { get; set; }
         public DateTime TimeOfKill { get; set; }
 
-        public KillEvent(RoleTypeId attackerRole, string attackerName, RoleTypeId victimRole, string victimName, DamageHandler damageInfo)
+        public KillEvent(RoleTypeId attackerRole, string attackerName, RoleTypeId victimRole, string victimName, DamageHandlerBase damageInfo)
         {
             AttackerRole = attackerRole;
             AttackerName = attackerName;
@@ -22,7 +22,7 @@ namespace RoundEndStats.API
             DamageInfo = damageInfo;
             TimeOfKill = DateTime.Now;
 
-            Utils.LogMessage($"{attackerRole} - {attackerName} killed {victimRole} - {victimName} // Cause of death: {damageInfo.Type} // Time of kill: {TimeOfKill}", Utils.LogLevel.Debug);
+            Utils.LogMessage($"{attackerRole} - {attackerName} killed {victimRole} - {victimName} // Cause of death: {damageInfo.GetType()} // Time of kill: {TimeOfKill}", Utils.LogLevel.Debug);
         }
     }
 }

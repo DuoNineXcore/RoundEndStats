@@ -1,6 +1,8 @@
-﻿using Exiled.Events.EventArgs.Scp096;
+﻿using PluginAPI;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
 using System;
-using Exiled.API.Features;
 using System.Collections.Generic;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
@@ -11,16 +13,18 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
         private Player playerWhoTriggered096;
         private DateTime survivalEndTime;
 
-        public void OnPlayerTriggered096(EnragingEventArgs ev)
+        [PluginEvent(ServerEventType.Scp096Enraging)]
+        public void OnPlayerTriggered096(Player ply, float initialDuration)
         {
-            playerWhoTriggered096 = ev.Player;
+            playerWhoTriggered096 = ply;
             survivalEndTime = DateTime.Now.AddSeconds(20);
-            Utils.LogMessage($"{ev.Player.Nickname} has triggered SCP-096.", Utils.LogLevel.Debug);
+            Utils.LogMessage($"{ply.Nickname} has triggered SCP-096.", Utils.LogLevel.Debug);
         }
 
-        public void OnAddingTarget(AddingTargetEventArgs ev)
+        [PluginEvent(ServerEventType.Scp096AddingTarget)]
+        public void OnAddingTarget(Player ply, Player atk, bool isForLooking)
         {
-            if (ev.Target == playerWhoTriggered096)
+            if (ply == playerWhoTriggered096)
             {
                 DateTime newEndTime = survivalEndTime.AddSeconds(3);
 
@@ -30,7 +34,7 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
                 }
 
                 survivalEndTime = newEndTime;
-                Utils.LogMessage($"SCP-096 has added {ev.Target.Nickname} as a target. Updated survival end time to {survivalEndTime}.", Utils.LogLevel.Debug);
+                Utils.LogMessage($"SCP-096 has added {ply.Nickname} as a target. Updated survival end time to {survivalEndTime}.", Utils.LogLevel.Debug);
             }
         }
 

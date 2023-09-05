@@ -1,7 +1,10 @@
-﻿using Exiled.Events.EventArgs.Player;
+﻿using PluginAPI.Core;
+using PluginAPI;
+using PluginAPI.Core.Attributes;
 using PlayerRoles;
 using System.Collections.Generic;
-using Exiled.API.Features;
+using PlayerStatsSystem;
+using PluginAPI.Enums;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
@@ -9,24 +12,25 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
     {
         private Dictionary<Player, int> scientistKillCount = new Dictionary<Player, int>();
 
-        public void OnPlayerKilled(DiedEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerDeath)]
+        void OnPlayerDied(Player ply, Player atk, DamageHandlerBase dmg)
         {
-            if (ev.Attacker.Role == RoleTypeId.Scientist && ev.Player.Role == RoleTypeId.ClassD)
+            if (atk.Role == RoleTypeId.Scientist && ply.Role == RoleTypeId.ClassD)
             {
-                if (!scientistKillCount.ContainsKey(ev.Attacker))
+                if (!scientistKillCount.ContainsKey(atk))
                 {
-                    scientistKillCount[ev.Attacker] = 0;
+                    scientistKillCount[atk] = 0;
                 }
 
-                scientistKillCount[ev.Attacker]++;
+                scientistKillCount[atk]++;
 
-                Utils.LogMessage($"Scientist {ev.Attacker.Nickname} has killed Class-D {ev.Player.Nickname}. Total kills: {scientistKillCount[ev.Attacker]}", Utils.LogLevel.Debug);
+                Utils.LogMessage($"Scientist {atk.Nickname} has killed Class-D {ply.Nickname}. Total kills: {scientistKillCount[atk]}", Utils.LogLevel.Debug);
 
-                if (scientistKillCount[ev.Attacker] >= 5)
+                if (scientistKillCount[atk] >= 5)
                 {
-                    Utils.LogMessage($"Scientist {ev.Attacker.Nickname} has reached the required kill count for the achievement 'They're just resources.'", Utils.LogLevel.Debug);
-                    achievementTracker.AwardAchievement("They're just resources.", ev.Attacker);
-                    scientistKillCount.Remove(ev.Attacker);
+                    Utils.LogMessage($"Scientist {atk.Nickname} has reached the required kill count for the achievement 'They're just resources.'", Utils.LogLevel.Debug);
+                    achievementTracker.AwardAchievement("They're just resources.", atk);
+                    scientistKillCount.Remove(atk);
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Exiled.API.Features;
+using PluginAPI;
+using PluginAPI.Core;
 using PlayerRoles;
 using UnityEngine;
 using System;
@@ -73,7 +74,7 @@ namespace RoundEndStats.API
             string className = method.DeclaringType.Name;
 
             ConsoleColor color = GetColorForLevel(level);
-            Log.SendRaw($"[RoundEndStats - {className}.{methodName} - {level}] {message}", color);
+            Log.Raw($"[RoundEndStats - {className}.{methodName} - {level}] {message}");
         }
 
         private static bool ShouldLog(LogLevel level)

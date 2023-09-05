@@ -1,5 +1,8 @@
-﻿using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
+﻿using PlayerRoles;
+using PluginAPI;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
 using RoundEndStats.API.Events;
 using System;
 using System.Collections.Generic;
@@ -13,25 +16,27 @@ namespace RoundEndStats.API.EventHandlers
         private Dictionary<Player, TimeSpan> playerEscapeTimes = new Dictionary<Player, TimeSpan>();
         private DateTime roundStartTime;
 
+        [PluginEvent(ServerEventType.RoundStart)]
         public void OnRoundStart()
         {
             roundStartTime = DateTime.Now;
             Utils.LogMessage("Round started. Setting initial round start time.", Utils.LogLevel.Debug);
         }
 
-        public void OnPlayerEscape(EscapingEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerEscape)]
+        public void OnPlayerEscape(Player plr, RoleTypeId role)
         {
-            if (ev.Player == null)
+            if (plr == null)
             {
                 Utils.LogMessage("Player escape event triggered with null player.", Utils.LogLevel.Error);
                 return;
             }
 
             TimeSpan escapeTime = DateTime.Now - roundStartTime;
-            playerEscapeTimes[ev.Player] = escapeTime;
+            playerEscapeTimes[plr] = escapeTime;
 
-            escapeLog.Add(new EscapeEvent(ev.Player, ev.Player.Role.Type));
-            Utils.LogMessage($"{ev.Player.Nickname} has escaped. Logging escape event.", Utils.LogLevel.Debug);
+            escapeLog.Add(new EscapeEvent(plr, role));
+            Utils.LogMessage($"{plr.Nickname} has escaped. Logging escape event.", Utils.LogLevel.Debug);
         }
 
         private Player GetFirstPlayerToEscape()
@@ -53,7 +58,7 @@ namespace RoundEndStats.API.EventHandlers
         private int GetTotalEscapes()
         {
             int totalEscapes = escapeLog.Count;
-            Utils.LogMessage($"Total escapes this round: {totalEscapes}.", Utils.LogLevel.Debug);
+            Utils.LogMessage($"Total escapes this round: {totalEscapes}.", Utils.LogLevel.Info);
             return totalEscapes;
         }
 
@@ -67,7 +72,7 @@ namespace RoundEndStats.API.EventHandlers
 
             if (playerEscapeTimes.TryGetValue(player, out TimeSpan escapeTime))
             {
-                Utils.LogMessage($"Retrieved escape time for {player.Nickname}: {escapeTime}.", Utils.LogLevel.Debug);
+                Utils.LogMessage($"Retrieved escape time for {player.Nickname}: {escapeTime}.", Utils.LogLevel.Info);
                 return escapeTime;
             }
 

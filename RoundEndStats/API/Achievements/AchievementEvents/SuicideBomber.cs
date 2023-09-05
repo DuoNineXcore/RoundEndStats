@@ -1,16 +1,22 @@
-﻿using Exiled.Events.EventArgs.Scp330;
+﻿using PluginAPI;
+using PluginAPI.Core;
+using PluginAPI.Enums;
 using InventorySystem.Items.Usables.Scp330;
 using System.Linq;
+using PluginAPI.Core.Attributes;
+using InventorySystem.Items;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
+    /*
     public partial class AchievementEvents
     {
-        public void OnEatingScp330(EatingScp330EventArgs ev)
+        [PluginEvent(ServerEventType.PlayerUsedItem)]
+        public void OnEatingScp330(Player plr, ItemBase item)
         {
             var mainEventHandlers = RoundEndStats.Instance.mainEventHandlers;
 
-            if (ev.Candy is CandyPink)
+            if (item.Candy is CandyPink)
             {
                 Utils.LogMessage($"{ev.Player.Nickname} has eaten a pink candy from SCP-330.", Utils.LogLevel.Debug);
 
@@ -26,4 +32,5 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
             }
         }
     }
+    */
 }

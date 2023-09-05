@@ -1,6 +1,10 @@
-﻿using Exiled.Events.EventArgs.Player;
+﻿using InventorySystem.Items.Usables;
+using PlayerStatsSystem;
+using PluginAPI;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
 using System;
-using Exiled.API.Features;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
 {
@@ -9,44 +13,46 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
         private Player colaConsumer = null;
         private DateTime? colaTimerStart = null;
 
-        public void OnItemUsage(UsingItemEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerUseItem)]
+        public void OnItemUsage(Player ply, UsableItem item)
         {
-            if (ev.Player == null)
+            if (ply == null)
             {
                 Utils.LogMessage($"Player is null in OnItemUsage.", Utils.LogLevel.Error);
                 return;
             }
 
-            if (ev.Item.Type == ItemType.SCP207)
+            if (item.ItemTypeId == ItemType.SCP207)
             {
                 if (colaConsumer == null)
                 {
-                    colaConsumer = ev.Player;
-                    Utils.LogMessage($"{ev.Player.Nickname} started consuming cola.", Utils.LogLevel.Debug);
+                    colaConsumer = ply;
+                    Utils.LogMessage($"{ply.Nickname} started consuming cola.", Utils.LogLevel.Debug);
                 }
 
-                if (colaConsumer == ev.Player)
+                if (colaConsumer == ply)
                 {
                     if (colaTimerStart == null)
                     {
                         colaTimerStart = DateTime.Now;
-                        Utils.LogMessage($"Cola timer started for {ev.Player.Nickname}.", Utils.LogLevel.Debug);
+                        Utils.LogMessage($"Cola timer started for {ply.Nickname}.", Utils.LogLevel.Debug);
                     }
                 }
             }
         }
 
-        public void OnPlayerDeath(DiedEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerDeath)]
+        public void OnPlayerDeath(Player ply, Player atk, DamageHandlerBase dmg)
         {
-            if (ev.Player == null)
+            if (ply == null)
             {
                 Utils.LogMessage($"Player is null in OnPlayerDeath.", Utils.LogLevel.Error);
                 return;
             }
 
-            if (colaConsumer == ev.Player)
+            if (colaConsumer == ply)
             {
-                Utils.LogMessage($"{ev.Player.Nickname}, the cola consumer, died.", Utils.LogLevel.Debug);
+                Utils.LogMessage($"{ply.Nickname}, the cola consumer, died.", Utils.LogLevel.Debug);
                 colaConsumer = null;
                 colaTimerStart = null;
             }

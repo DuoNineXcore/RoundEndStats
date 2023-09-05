@@ -1,5 +1,6 @@
-﻿using Exiled.Events.EventArgs.Player;
-using Exiled.API.Features;
+﻿using PluginAPI.Core;
+using PluginAPI.Enums;
+using PluginAPI.Core.Attributes;
 using System.Collections.Generic;
 
 namespace RoundEndStats.API.Achievements.AchievementEvents
@@ -8,26 +9,27 @@ namespace RoundEndStats.API.Achievements.AchievementEvents
     {
         public Dictionary<Player, int> pocketDimensionEscapes = new Dictionary<Player, int>();
 
-        public void OnPlayerEscapedPocketDimension(EscapingPocketDimensionEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerExitPocketDimension)]
+        public void OnPlayerEscapedPocketDimension(Player ply, bool success)
         {
-            if (ev.Player == null)
+            if (ply == null)
             {
                 Utils.LogMessage($"Player is null in OnPlayerEscapedPocketDimension.", Utils.LogLevel.Error);
                 return;
             }
 
-            if (!pocketDimensionEscapes.ContainsKey(ev.Player))
+            if (!pocketDimensionEscapes.ContainsKey(ply))
             {
-                pocketDimensionEscapes[ev.Player] = 0;
+                pocketDimensionEscapes[ply] = 0;
             }
 
-            pocketDimensionEscapes[ev.Player]++;
-            Utils.LogMessage($"{ev.Player.Nickname} escaped from the pocket dimension. Total escapes: {pocketDimensionEscapes[ev.Player]}", Utils.LogLevel.Debug);
+            pocketDimensionEscapes[ply]++;
+            Utils.LogMessage($"{ply.Nickname} escaped from the pocket dimension. Total escapes: {pocketDimensionEscapes[ply]}", Utils.LogLevel.Debug);
 
-            if (pocketDimensionEscapes[ev.Player] == 2)
+            if (pocketDimensionEscapes[ply] == 2)
             {
-                achievementTracker.AwardAchievement("Dimensional Dodger", ev.Player);
-                Utils.LogMessage($"{ev.Player.Nickname} was awarded the 'Dimensional Dodger' achievement.", Utils.LogLevel.Info);
+                achievementTracker.AwardAchievement("Dimensional Dodger", ply);
+                Utils.LogMessage($"{ply.Nickname} was awarded the 'Dimensional Dodger' achievement.", Utils.LogLevel.Info);
             }
         }
     }

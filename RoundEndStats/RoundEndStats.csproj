@@ -42,29 +42,15 @@
     <Reference Include="CommandSystem.Core">
       <HintPath>..\..\..\Documents\C# References\CommandSystem.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.API">
-      <HintPath>..\..\..\Documents\C# References\Exiled.API.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.CreditTags">
-      <HintPath>..\..\..\Documents\C# References\Exiled.CreditTags.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.CustomItems">
-      <HintPath>..\..\..\Documents\C# References\Exiled.CustomItems.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.CustomRoles">
-      <HintPath>..\..\..\Documents\C# References\Exiled.CustomRoles.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.Events">
-      <HintPath>..\..\..\Documents\C# References\Exiled.Events.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.Permissions">
-      <HintPath>..\..\..\Documents\C# References\Exiled.Permissions.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.Updater">
-      <HintPath>..\..\..\Documents\C# References\Exiled.Updater.dll</HintPath>
-    </Reference>
     <Reference Include="Mirror">
       <HintPath>..\..\..\Documents\C# References\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="NorthwoodLib, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Documents\C# References\NorthwoodLib.dll</HintPath>
+    </Reference>
+    <Reference Include="NWAPIPermissionSystem">
+      <HintPath>..\..\..\Documents\C# References\NWAPIPermissionSystem.dll</HintPath>
     </Reference>
     <Reference Include="PluginAPI, Version=13.1.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -106,7 +92,7 @@
     <Compile Include="API\NameFormatter.cs" />
     <Compile Include="API\Utils.cs" />
     <Compile Include="API\EventHandlers\MainEventHandlers.cs" />
-    <Compile Include="Plugin.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

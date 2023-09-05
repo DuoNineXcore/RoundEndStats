@@ -1,9 +1,8 @@
-﻿using Exiled.API.Interfaces;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace RoundEndStats
 {
-    public class Config : IConfig
+    public class Config
     {
         [Description("uhhhhhhhhhhhhh")]
         public bool IsEnabled { get; set; } = true;

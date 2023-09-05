@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoundEndStats", "RoundEndStats\RoundEndStats.csproj", "{64FD0725-66EE-4245-B1EF-AF9B1300E03A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoundEndStats NW", "RoundEndStats\RoundEndStats.csproj", "{64FD0725-66EE-4245-B1EF-AF9B1300E03A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

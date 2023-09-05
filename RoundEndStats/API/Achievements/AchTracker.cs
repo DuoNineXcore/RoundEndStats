@@ -1,4 +1,4 @@
-﻿using Exiled.API.Features;
+﻿using PluginAPI.Core;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +12,7 @@ namespace RoundEndStats.API.Achievements
         public AchievementTracker()
         {
             achievementsUnlocked = new Dictionary<string, bool>();
-            Utils.LogMessage("Achievement Tracker initialized.", Utils.LogLevel.Debug);
+            Utils.LogMessage("Achievement Tracker initialized.", Utils.LogLevel.Info);
         }
 
         public void AwardAchievement(string achievementName, Player ply)

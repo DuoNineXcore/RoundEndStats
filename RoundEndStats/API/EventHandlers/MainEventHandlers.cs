@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Exiled.API.Extensions;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs.Server;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI;
 using PlayerRoles;
 using RoundEndStats.API.Achievements;
 using RoundEndStats.API.Achievements.AchievementEvents;
@@ -12,15 +13,10 @@ namespace RoundEndStats.API.EventHandlers
 {
     public partial class MainEventHandlers
     {
-        private AchievementTracker achievementTracker { get; set; }
-        private AchievementEvents achievementEvents { get; set; }
+        private AchievementTracker achievementTracker = new AchievementTracker();
+        private AchievementEvents achievementEvents = new AchievementEvents();
 
-        public MainEventHandlers()
-        {
-            achievementTracker = new AchievementTracker();
-            achievementEvents = new AchievementEvents();
-        }
-
+        [PluginEvent(ServerEventType.WaitingForPlayers)]
         public void OnWaiting()
         {
             achievementEvents.pocketDimensionEscapes.Clear();
@@ -30,10 +26,11 @@ namespace RoundEndStats.API.EventHandlers
             Utils.LogMessage("Cleared event logs on waiting.", Utils.LogLevel.Debug);
         }
 
-        public void OnRoundEnd(RoundEndedEventArgs ev)
+        [PluginEvent(ServerEventType.RoundEnd)]
+        public void OnRoundEnd(Player ply)
         {
             Utils.LogMessage("Round ended. Broadcasting player stats.", Utils.LogLevel.Info);
-            foreach (var player in Player.List)
+            foreach (var player in Player.GetPlayers())
             {
                 Utils.LogMessage($"Player Stats are going to be broadcasted to player: {player}", Utils.LogLevel.Info);
                 BroadcastPlayerStats(player);
@@ -45,7 +42,7 @@ namespace RoundEndStats.API.EventHandlers
         {
             try
             {
-                Utils.LogMessage($"Constructing player broadcast", Utils.LogLevel.Info);
+                Utils.LogMessage($"Constructing player broadcast for player {player?.Nickname ?? "NULL"}", Utils.LogLevel.Info);
 
                 if (RoundEndStats.Instance == null)
                 {
@@ -95,18 +92,18 @@ namespace RoundEndStats.API.EventHandlers
                     .Replace("{topHumanName}", topHumanKillerStats.ColoredName)
                     .Replace("{topHumanRole}", topHumanKillerStats.RoleName)
                     .Replace("{topHumanKills}", topHumanKillerStats.Kills.ToString());
-                    Utils.LogMessage($"Stats message constructed, broadcasting.", Utils.LogLevel.Info);
+                Utils.LogMessage($"Stats message constructed, broadcasting.", Utils.LogLevel.Info);
 
-            if (!RoundEndStats.Instance.Config.IsHint)
-            {
-                player.Broadcast(RoundEndStats.Instance.Config.BroadcastDuration, $"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", Broadcast.BroadcastFlags.Normal);
-                Utils.LogMessage($"Broadcasted stats to player {player.Nickname}.", Utils.LogLevel.Debug);
-            }
-            else
-            {
-                player.ShowHint($"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", RoundEndStats.Instance.Config.BroadcastDuration);
-                Utils.LogMessage($"Displayed hint with stats to player {player.Nickname}.", Utils.LogLevel.Debug);
-            }
+                if (!RoundEndStats.Instance.Config.IsHint)
+                {
+                    player.SendBroadcast($"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", RoundEndStats.Instance.Config.BroadcastDuration, Broadcast.BroadcastFlags.Normal);
+                    Utils.LogMessage($"Broadcasted stats to player {player.Nickname}.", Utils.LogLevel.Debug);
+                }
+                else
+                {
+                    player.ReceiveHint($"<size={RoundEndStats.Instance.Config.BroadcastSize}>{statsMessage}</size>", RoundEndStats.Instance.Config.BroadcastDuration);
+                    Utils.LogMessage($"Displayed hint with stats to player {player.Nickname}.", Utils.LogLevel.Debug);
+                }
             }
             catch (Exception ex)
             {
@@ -225,8 +222,8 @@ namespace RoundEndStats.API.EventHandlers
                 return ("None", "Unknown Role", 0, "None");
             }
 
-            string roleName = topScpItemUser.Role.Type.ToString();
-            string color = topScpItemUser.Role.Type.GetColor().ToHex();
+            string roleName = topScpItemUser.Role.ToString();
+            string color = topScpItemUser.Role.GetColor().ToHex();
             string coloredName = $"<color={color}>{topScpItemUser.Nickname}</color>";
 
             List<string> itemsUsed = topScpItemUserGroup.Select(u => NameFormatter.GetFriendlySCPItemName(u.ScpItem)).ToList();

@@ -1,8 +1,11 @@
-﻿using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
+﻿using PluginAPI.Core;
+using PluginAPI.Enums;
+using PluginAPI.Core.Attributes;
+using RoundEndStats.API.Events;
 using PlayerRoles;
 using System.Collections.Generic;
 using System.Linq;
+using PlayerStatsSystem;
 
 namespace RoundEndStats.API.EventHandlers
 {
@@ -12,64 +15,62 @@ namespace RoundEndStats.API.EventHandlers
         public Dictionary<Player, RoleTypeId> lastRoleBeforeDeath = new Dictionary<Player, RoleTypeId>();
         public Dictionary<Player, Dictionary<RoleTypeId, int>> playerKillsByRole = new Dictionary<Player, Dictionary<RoleTypeId, int>>();
 
-        public void OnPlayerHurt(HurtingEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerDamage)]
+        public void OnPlayerHurt(Player ply, Player atk, DamageHandlerBase dmg)
         {
-            if (ev.Player == null)
+            if (ply == null)
             {
                 Utils.LogMessage("Player hurt event triggered with null player.", Utils.LogLevel.Error);
                 return;
             }
 
-            if (ev.Player.Health - ev.Amount <= 0)
+            if (ply.Health - ply.Health <= 0)
             {
-                lastRoleBeforeDeath[ev.Player] = ev.Player.Role.Type;
-                Utils.LogMessage($"Stored last role before death for player {ev.Player.Nickname}.", Utils.LogLevel.Debug);
+                lastRoleBeforeDeath[ply] = ply.Role;
+                Utils.LogMessage($"Stored last role before death for player {ply.Nickname}.", Utils.LogLevel.Debug);
             }
         }
 
-        public void OnPlayerDied(DiedEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerDeath)]
+        public void OnPlayerDied(Player ply, Player atk, DamageHandlerBase dmg)
         {
-            if (ev.Player == null || ev.Attacker == null)
+            if (ply == null || atk == null)
             {
                 Utils.LogMessage("Player died event triggered with null player or attacker.", Utils.LogLevel.Error);
                 return;
             }
 
-            RoleTypeId roleAtDeath = lastRoleBeforeDeath.ContainsKey(ev.Player) ? lastRoleBeforeDeath[ev.Player] : ev.Player.Role.Type;
-            killLog.Add(new KillEvent(ev.Attacker.Role.Type, ev.Attacker.Nickname, roleAtDeath, ev.Player.Nickname, ev.DamageHandler));
+            RoleTypeId roleAtDeath = lastRoleBeforeDeath.ContainsKey(ply) ? lastRoleBeforeDeath[ply] : ply.Role;
+            killLog.Add(new KillEvent(atk.Role, atk.Nickname, roleAtDeath, ply.Nickname, dmg));
 
-            Utils.LogMessage($"{ev.Player.Nickname} was killed by {ev.Attacker.Nickname}.", Utils.LogLevel.Debug);
+            Utils.LogMessage($"{ply.Nickname} was killed by {atk.Nickname}.", Utils.LogLevel.Info);
 
-            if (ev.Attacker.Role == RoleTypeId.Scp096 && achievementEvents.playersWhoTriggered096.ContainsKey(ev.Player))
+            if (atk.Role == RoleTypeId.Scp096 && achievementEvents.playersWhoTriggered096.ContainsKey(ply))
             {
-                achievementEvents.playersWhoTriggered096.Remove(ev.Player);
+                achievementEvents.playersWhoTriggered096.Remove(ply);
             }
 
-            achievementEvents.OnPlayerKilledZombie(ev);
-            achievementEvents.OnPlayerDeath(ev);
-            UpdateKills(ev);
-        }
-
-        private void UpdateKills(DiedEventArgs ev)
-        {
-            if (ev.Attacker == null || ev.Player == null)
+            if (atk == null || ply == null)
             {
                 Utils.LogMessage("Update kills triggered with null player or attacker.", Utils.LogLevel.Error);
                 return;
             }
 
-            if (!playerKillsByRole.ContainsKey(ev.Attacker))
+            if (!playerKillsByRole.ContainsKey(atk))
             {
-                playerKillsByRole[ev.Attacker] = new Dictionary<RoleTypeId, int>();
+                playerKillsByRole[atk] = new Dictionary<RoleTypeId, int>();
             }
 
-            if (!playerKillsByRole[ev.Attacker].ContainsKey(ev.Attacker.Role.Type))
+            if (!playerKillsByRole[atk].ContainsKey(atk.Role))
             {
-                playerKillsByRole[ev.Attacker][ev.Attacker.Role.Type] = 0;
+                playerKillsByRole[atk][atk.Role] = 0;
             }
 
-            playerKillsByRole[ev.Attacker][ev.Attacker.Role.Type]++;
-            Utils.LogMessage($"Updated kill count for {ev.Attacker.Nickname}.", Utils.LogLevel.Debug);
+            playerKillsByRole[atk][atk.Role]++;
+            Utils.LogMessage($"Updated kill count for {atk.Nickname}.", Utils.LogLevel.Debug);
+
+            achievementEvents.OnPlayerKilledZombie(ply);
+            achievementEvents.OnPlayerDeath(ply);
         }
 
         public bool IsRoleTypeSCP(RoleTypeId roleType)
